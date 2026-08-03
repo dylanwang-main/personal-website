@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Fraunces, Work_Sans } from "next/font/google";
 import ThemeToggle from "@/components/ThemeToggle";
 import PageTransition from "@/components/PageTransition";
+import { site } from "@/content/content";
 import "./globals.css";
 
 const fraunces = Fraunces({
@@ -15,8 +16,8 @@ const workSans = Work_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Digital Museum",
-  description: "A prototype personal digital museum.",
+  title: site.title,
+  description: site.description,
 };
 
 const themeInitScript = `

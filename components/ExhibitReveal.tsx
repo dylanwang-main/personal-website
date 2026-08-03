@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { exhibitPage } from "@/content/content";
 
 export default function ExhibitReveal({
   name,
-  description,
+  body,
 }: {
   name: string;
-  description: string;
+  body: string;
 }) {
   return (
     <motion.main
@@ -18,12 +19,12 @@ export default function ExhibitReveal({
       className="flex flex-1 flex-col items-center gap-8 px-6 py-16 text-center"
     >
       <h1 className="text-3xl">{name}</h1>
-      <p className="max-w-xl text-muted">{description}</p>
+      <p className="max-w-xl text-muted">{body}</p>
       <Link
         href="/museum"
         className="rounded border border-frame px-6 py-3 transition hover:scale-105"
       >
-        Back to Museum
+        {exhibitPage.backLabel}
       </Link>
     </motion.main>
   );

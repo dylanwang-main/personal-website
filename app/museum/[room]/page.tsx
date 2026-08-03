@@ -1,9 +1,9 @@
 import { notFound } from "next/navigation";
-import { getRoom, rooms } from "@/lib/rooms";
+import { getExhibit, exhibitSlugs } from "@/lib/exhibits";
 import ExhibitReveal from "@/components/ExhibitReveal";
 
 export function generateStaticParams() {
-  return rooms.map((room) => ({ room: room.slug }));
+  return exhibitSlugs().map((room) => ({ room }));
 }
 
 export default async function Exhibit({
@@ -12,11 +12,11 @@ export default async function Exhibit({
   params: Promise<{ room: string }>;
 }) {
   const { room: slug } = await params;
-  const room = getRoom(slug);
+  const exhibit = getExhibit(slug);
 
-  if (!room) {
+  if (!exhibit) {
     notFound();
   }
 
-  return <ExhibitReveal name={room.name} description={room.description} />;
+  return <ExhibitReveal name={exhibit.name} body={exhibit.body} />;
 }

@@ -1,74 +1,71 @@
 "use client";
 
-import { useState } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
+import { useReducedMotion } from "framer-motion";
 import { useRouter } from "next/navigation";
-import CurtainPanels from "@/components/CurtainPanels";
-
-type Phase = "closed" | "opening" | "expanding";
+import CurtainPanels, { CURTAIN_DURATION } from "@/components/CurtainPanels";
+import DoorGraphic from "@/components/DoorGraphic";
+import { entrance } from "@/content/content";
 
 export default function Home() {
   const router = useRouter();
   const reduceMotion = useReducedMotion();
-  const [phase, setPhase] = useState<Phase>("closed");
+  const [revealing, setRevealing] = useState(false);
+  // One click, one transition, one navigation — even if React re-renders or
+  // re-invokes effects (Strict Mode) in between.
+  const navigated = useRef(false);
 
-  function handleEnter() {
+  function go(href: string) {
+    if (navigated.current) return;
+    navigated.current = true;
+    router.push(href);
+  }
+
+  function enterMuseum() {
+    if (revealing || navigated.current) return;
     if (reduceMotion) {
-      router.push("/museum");
+      go("/museum");
       return;
     }
-    setPhase("opening");
+    setRevealing(true);
   }
+
+  // Navigation is sequenced off the curtain duration rather than an animation
+  // callback, so it happens exactly once per reveal.
+  useEffect(() => {
+    if (!revealing) return;
+    const timer = setTimeout(() => go("/museum"), CURTAIN_DURATION * 1000);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [revealing]);
 
   return (
     <main className="flex flex-1 flex-col items-center justify-center gap-14 px-6 py-16">
       <div className="grid w-full max-w-5xl grid-cols-1 gap-10 md:grid-cols-2">
         <div className="flex h-64 items-center justify-center border border-frame bg-panel text-muted md:h-80">
-          Photo
+          {entrance.imagePlaceholder}
         </div>
         <div className="flex flex-col justify-center gap-4">
-          <h1 className="text-3xl">About Me</h1>
-          <p className="text-muted">
-            Placeholder paragraph about me. This space will eventually hold a
-            short introduction, a bit of background, and whatever else feels
-            worth sharing before stepping into the museum.
-          </p>
+          <h1 className="text-3xl">{entrance.heading}</h1>
+          <p className="text-muted">{entrance.body}</p>
         </div>
       </div>
 
-      <motion.div
-        layout
-        onLayoutAnimationComplete={() => {
-          if (phase === "expanding") router.push("/museum");
-        }}
-        className={
-          phase === "expanding"
-            ? "fixed inset-0 z-50"
-            : "relative h-56 w-72 overflow-hidden rounded-t-3xl border-2 border-gold-deep"
-        }
-        style={{ background: "#17150f" }}
+      <button
+        type="button"
+        onClick={enterMuseum}
+        disabled={revealing}
+        aria-label={entrance.doorLabel}
+        className="group rounded-t-lg"
       >
-        {phase !== "expanding" && (
-          <>
-            <CurtainPanels
-              open={phase === "opening"}
-              onTransitionComplete={() => {
-                if (phase === "opening") setPhase("expanding");
-              }}
-            />
-            <button
-              type="button"
-              onClick={handleEnter}
-              disabled={phase !== "closed"}
-              className="absolute inset-0 z-10 flex items-center justify-center"
-            >
-              <span className="rounded border border-gold px-8 py-3 text-sm font-medium tracking-wide text-gold">
-                Enter
-              </span>
-            </button>
-          </>
-        )}
-      </motion.div>
+        <DoorGraphic />
+      </button>
+
+      {revealing && (
+        <div className="fixed inset-0 z-50">
+          <CurtainPanels initialOpen={false} open />
+        </div>
+      )}
     </main>
   );
 }

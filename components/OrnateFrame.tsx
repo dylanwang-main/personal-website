@@ -8,9 +8,11 @@ const corners = [
 export default function OrnateFrame({
   tone,
   name,
+  placeholder,
 }: {
   tone: "gold" | "neutral";
   name: string;
+  placeholder: string;
 }) {
   const isGold = tone === "gold";
 
@@ -49,7 +51,7 @@ export default function OrnateFrame({
             className="flex h-32 w-full items-center justify-center bg-panel text-sm text-muted md:h-40"
             style={{ boxShadow: "inset 0 2px 10px rgba(0,0,0,0.25)" }}
           >
-            Image
+            {placeholder}
           </div>
         </div>
       </div>
