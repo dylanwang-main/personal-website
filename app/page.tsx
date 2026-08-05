@@ -80,7 +80,16 @@ export default function Home() {
   const pushTransition = { duration: THRESHOLD_DURATION, ease: EASE_PUSH };
 
   return (
-    <main className="flex flex-1 flex-col items-center justify-center gap-8 px-6 py-8">
+    // Vertical rhythm is clamped off viewport height, not fixed, so the whole
+    // entrance still clears the fold on short screens. The door is the only
+    // action here, so the copy above it gives up height first.
+    <main
+      className="flex flex-1 flex-col items-center justify-center px-6"
+      style={{
+        gap: "clamp(16px, 3vh, 32px)",
+        paddingBlock: "clamp(16px, 3vh, 32px)",
+      }}
+    >
       <motion.div
         className="grid w-full max-w-5xl grid-cols-1 items-center gap-8 md:grid-cols-2"
         initial={false}
@@ -89,7 +98,7 @@ export default function Home() {
       >
         <div
           className="flex items-center justify-center border border-frame bg-panel text-muted"
-          style={{ height: "clamp(180px, 30vh, 260px)" }}
+          style={{ height: "clamp(120px, 22vh, 260px)" }}
         >
           {entrance.imagePlaceholder}
         </div>

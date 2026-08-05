@@ -2,12 +2,17 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* --frame carries every border on the site and is never text, so it is held at
+   3:1 against --panel — the WCAG 1.4.11 floor for non-text UI. --slab is one
+   tonal step off --panel so surfaces that sit on top of a panel (the door's
+   swinging slab) separate from it without needing a heavier border. */
 :root {
   --wall: #edece7;
   --panel: #e3e1da;
+  --slab: #d8d5cc;
   --ink: #2b2926;
   --muted: #6b675f;
-  --frame: #a8a29b;
+  --frame: #827d75;
   --gold: #c9a227;
   --gold-deep: #9c7a22;
 }
@@ -15,9 +20,10 @@
 .dark {
   --wall: #1b1a18;
   --panel: #262420;
+  --slab: #2f2c27;
   --ink: #ede9e1;
   --muted: #a39d92;
-  --frame: #4b4740;
+  --frame: #6f6a60;
   --gold: #d4af37;
   --gold-deep: #8b6b1f;
 }
@@ -25,6 +31,7 @@
 @theme inline {
   --color-wall: var(--wall);
   --color-panel: var(--panel);
+  --color-slab: var(--slab);
   --color-ink: var(--ink);
   --color-muted: var(--muted);
   --color-frame: var(--frame);

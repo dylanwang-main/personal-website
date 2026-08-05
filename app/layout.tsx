@@ -3,7 +3,6 @@ import { Fraunces, Work_Sans } from "next/font/google";
 import PageTransition from "@/components/PageTransition";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
-import Probe from "@/components/__Probe";
 import { site } from "@/content/content";
 import "./globals.css";
 
@@ -51,7 +50,6 @@ export default function RootLayout({
       {/* pt-14 clears the fixed header, which overlays content rather than
           pushing it down. */}
       <body className="flex min-h-full flex-col bg-wall pt-14 text-ink">
-        <Probe where="layout" />
         <SiteHeader />
         <PageTransition>{children}</PageTransition>
         <SiteFooter />
