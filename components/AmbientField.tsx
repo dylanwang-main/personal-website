@@ -1,12 +1,8 @@
 "use client";
 
-import {
-  motion,
-  useReducedMotion,
-  useTransform,
-  type MotionValue,
-} from "framer-motion";
+import { motion, useTransform, type MotionValue } from "framer-motion";
 import { AMBIENT_DRIFT } from "@/lib/motion";
+import { useMotionEnabled } from "@/lib/useMotionEnabled";
 
 /**
  * The entrance's atmosphere layer: two wide, low-contrast pools of warm light
@@ -32,7 +28,7 @@ export default function AmbientField({
   nx: MotionValue<number>;
   ny: MotionValue<number>;
 }) {
-  const reduceMotion = useReducedMotion();
+  const drifting = useMotionEnabled();
 
   // Small travel, and opposite in sign to the door's, so the two separate in
   // depth rather than sliding together.
@@ -61,7 +57,7 @@ export default function AmbientField({
           }}
           initial={false}
           animate={
-            reduceMotion ? undefined : { x: ["-3%", "4%"], y: ["2%", "-3%"] }
+            drifting ? { x: ["-3%", "4%"], y: ["2%", "-3%"] } : { x: 0, y: 0 }
           }
           transition={drift}
         />
@@ -73,7 +69,7 @@ export default function AmbientField({
           }}
           initial={false}
           animate={
-            reduceMotion ? undefined : { x: ["3%", "-4%"], y: ["-2%", "3%"] }
+            drifting ? { x: ["3%", "-4%"], y: ["-2%", "3%"] } : { x: 0, y: 0 }
           }
           transition={{ ...drift, duration: AMBIENT_DRIFT * 1.3 }}
         />
@@ -88,7 +84,7 @@ export default function AmbientField({
             "radial-gradient(70% 60% at 50% 45%, transparent 40%, rgba(0,0,0,0.28))",
         }}
         initial={false}
-        animate={reduceMotion ? undefined : { scale: [1, 1.06] }}
+        animate={drifting ? { scale: [1, 1.06] } : { scale: 1 }}
         transition={{ ...drift, duration: AMBIENT_DRIFT * 1.6 }}
       />
     </div>

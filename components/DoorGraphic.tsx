@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, type RefObject } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 import {
   DOOR_BREATH,
   DOOR_CRACK,
@@ -9,6 +9,7 @@ import {
   EASE_SNAP,
   EASE_THUNK,
 } from "@/lib/motion";
+import { useMotionEnabled } from "@/lib/useMotionEnabled";
 
 /**
  * How far through the interaction the door is. The parent owns this so one user
@@ -83,7 +84,7 @@ export default function DoorGraphic({
   /** The dark doorway itself. The parent measures it to start the zoom there. */
   doorwayRef?: RefObject<HTMLDivElement | null>;
 }) {
-  const reduceMotion = useReducedMotion();
+  const canBreathe = useMotionEnabled();
   // `entering` holds the slab where `opening` left it while the zoom takes over.
   const state = phase === "entering" ? "opening" : phase;
   const m = useDoorMotion(state);
@@ -94,7 +95,7 @@ export default function DoorGraphic({
   // The cue that this is the way in. It breathes only at rest: once the visitor
   // is on the door, the door's own motion says everything the halo was saying,
   // and two things pulsing at once reads as the page glitching.
-  const breathing = phase === "idle" && !reduceMotion;
+  const breathing = phase === "idle" && canBreathe;
 
   return (
     <motion.div
