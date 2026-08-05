@@ -65,7 +65,9 @@ function useDoorMotion(state: "idle" | "ajar" | "opening") {
  * owns the phase, so the whole door is one control with nothing layered on top.
  *
  * Sized off viewport height so the entrance (photo, about copy, door) fits one
- * screen without scrolling; the 5:8 slab proportion holds at every size.
+ * screen without scrolling; the 5:8 slab proportion holds at every size. The
+ * door is the page's one action, so it shrinks less than the copy above it —
+ * see the matching clamps in app/page.tsx.
  */
 export default function DoorGraphic({
   phase,
@@ -83,7 +85,7 @@ export default function DoorGraphic({
   return (
     <motion.div
       className="relative"
-      style={{ height: "clamp(180px, 30vh, 260px)", aspectRatio: "5 / 8" }}
+      style={{ height: "clamp(180px, 34vh, 300px)", aspectRatio: "5 / 8" }}
       initial={false}
       animate={m.architrave}
       transition={m.architraveTransition}
@@ -116,7 +118,7 @@ export default function DoorGraphic({
         style={{ perspective: "900px", transformStyle: "preserve-3d" }}
       >
         <motion.div
-          className="relative flex h-full w-full flex-col gap-2 rounded-t-md border border-frame bg-panel p-2"
+          className="relative flex h-full w-full flex-col gap-2 rounded-t-md border border-frame bg-slab p-2"
           style={{
             transformOrigin: "left center",
             backfaceVisibility: "hidden",
