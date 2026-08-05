@@ -39,8 +39,33 @@ export const site = {
 };
 
 export const entrance = {
+  /** The largest thing on the site. Shown in the arrival sequence, then as the hero. */
+  name: "Dylan Wang",
+  /**
+   * Cycled one at a time under the name. Short enough to read at a glance —
+   * these are labels for what the work currently is, not sentences. Two or more
+   * entries cycle; a single entry just sits there.
+   */
+  taglines: [
+    "Placeholder focus one",
+    "Placeholder focus two",
+    "Placeholder focus three",
+  ],
   heading: "About Me",
   body: "Placeholder paragraph about me. This space will eventually hold a short introduction, a bit of background, and whatever else feels worth sharing before stepping into the museum.",
+  /** Status line under the bio. Expected to be edited often, so it stands alone. */
+  currentlyLabel: "Currently",
+  currently:
+    "Placeholder status line — what is being worked on right now, dated so a stale line is obvious.",
+  /**
+   * Museum wall placards: a short label over a short value. Kept to three —
+   * these are meant to be read in one pass on the way past, not studied.
+   */
+  placards: [
+    { label: "Based in", value: "Placeholder city" },
+    { label: "Working on", value: "Placeholder focus" },
+    { label: "Open to", value: "Placeholder availability" },
+  ],
   /** Path under /public for the portrait. Empty = placeholder box */
   image: "",
   imagePlaceholder: "Photo",
@@ -156,7 +181,8 @@ export const exhibits: Exhibit[] = [
   {
     slug: "content-creation",
     name: "Content Creation",
-    subtitle: "Placeholder hook — the featured wall: writing, video, everything published.",
+    subtitle:
+      "Placeholder hook — the featured wall: writing, video, everything published.",
     paragraphs: [
       "Placeholder intro for Content Creation, the featured exhibit. A few sentences on what gets made, where it goes, and who it is for — the reason this room gets the gold frame in the hall.",
       "Placeholder detail paragraph. The process end: how an idea becomes a post or a video, what the editing loop looks like, and which formats have earned their keep. Real copy will point at specific pieces and the platforms they live on.",
