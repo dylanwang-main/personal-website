@@ -1,8 +1,14 @@
 "use client";
 
 import { useMemo, type RefObject } from "react";
-import { motion } from "framer-motion";
-import { DOOR_CRACK, DOOR_SWING, EASE_SNAP, EASE_THUNK } from "@/lib/motion";
+import { motion, useReducedMotion } from "framer-motion";
+import {
+  DOOR_BREATH,
+  DOOR_CRACK,
+  DOOR_SWING,
+  EASE_SNAP,
+  EASE_THUNK,
+} from "@/lib/motion";
 
 /**
  * How far through the interaction the door is. The parent owns this so one user
@@ -77,10 +83,18 @@ export default function DoorGraphic({
   /** The dark doorway itself. The parent measures it to start the zoom there. */
   doorwayRef?: RefObject<HTMLDivElement | null>;
 }) {
+  const reduceMotion = useReducedMotion();
   // `entering` holds the slab where `opening` left it while the zoom takes over.
   const state = phase === "entering" ? "opening" : phase;
   const m = useDoorMotion(state);
-  const fade = { duration: state === "opening" ? DOOR_SWING * 0.6 : DOOR_CRACK };
+  const fade = {
+    duration: state === "opening" ? DOOR_SWING * 0.6 : DOOR_CRACK,
+  };
+
+  // The cue that this is the way in. It breathes only at rest: once the visitor
+  // is on the door, the door's own motion says everything the halo was saying,
+  // and two things pulsing at once reads as the page glitching.
+  const breathing = phase === "idle" && !reduceMotion;
 
   return (
     <motion.div
@@ -90,6 +104,27 @@ export default function DoorGraphic({
       animate={m.architrave}
       transition={m.architraveTransition}
     >
+      {/* Halo, behind the architrave and spilling past it. Reduced motion keeps
+          it at a steady low glow — still a cue, just not a moving one. */}
+      <motion.div
+        aria-hidden
+        className="pointer-events-none absolute -inset-6 -z-10"
+        style={{
+          background:
+            "radial-gradient(50% 45% at 50% 55%, rgba(212,175,55,0.30), transparent 70%)",
+        }}
+        initial={false}
+        animate={
+          breathing
+            ? { opacity: [0.35, 0.85, 0.35], scale: [0.97, 1.03, 0.97] }
+            : { opacity: phase === "idle" ? 0.5 : 0, scale: 1 }
+        }
+        transition={
+          breathing
+            ? { duration: DOOR_BREATH, repeat: Infinity, ease: "easeInOut" }
+            : { duration: DOOR_CRACK }
+        }
+      />
       {/* Architrave: the fixed surround the slab is recessed into */}
       <div className="absolute inset-0 rounded-t-lg border-2 border-frame bg-panel p-2 shadow-lg">
         {/* Doorway: what the slab was hiding, and where the zoom begins */}

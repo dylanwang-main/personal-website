@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Fraunces, Work_Sans } from "next/font/google";
+import ArrivalCurtain from "@/components/ArrivalCurtain";
 import PageTransition from "@/components/PageTransition";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
@@ -50,6 +51,9 @@ export default function RootLayout({
       {/* pt-14 clears the fixed header, which overlays content rather than
           pushing it down. */}
       <body className="flex min-h-full flex-col bg-wall pt-14 text-ink">
+        {/* Outside PageTransition on purpose — it is a full-viewport overlay,
+            and PageTransition's transform would trap it. See ArrivalCurtain. */}
+        <ArrivalCurtain />
         <SiteHeader />
         <PageTransition>{children}</PageTransition>
         <SiteFooter />

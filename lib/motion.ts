@@ -22,6 +22,33 @@ export const EASE_WIPE = [0.65, 0, 0.35, 1] as const;
  */
 export const EASE_PUSH = [0.72, 0, 0.24, 1] as const;
 
+/**
+ * Arrival sequence, in order: the name fades up on near-black, holds, then the
+ * veil lifts to reveal the entrance. Sequenced off these three the same way the
+ * door is — each beat advances on the previous one's duration.
+ *
+ * Kept under three seconds in total. It runs once per session (see the entrance
+ * page), so the cost is paid on a first visit and never on the way back from the
+ * exit, but it is still time before the visitor can do anything.
+ */
+export const ARRIVAL_NAME = 0.9;
+export const ARRIVAL_HOLD = 1.0;
+export const ARRIVAL_LIFT = 0.8;
+
+/** Kinetic tagline: how long a phrase holds, and the crossfade between them. */
+export const TAGLINE_HOLD = 2.8;
+export const TAGLINE_FADE = 0.5;
+
+/**
+ * Ambient background drift. Deliberately far longer than any interaction on the
+ * site: at this length the movement is never the thing being watched, it only
+ * keeps the page from reading as a still image.
+ */
+export const AMBIENT_DRIFT = 42;
+
+/** The door's breathing cue: one full in-and-out. */
+export const DOOR_BREATH = 3.6;
+
 /** Door: idle -> ajar, on hover/focus. */
 export const DOOR_CRACK = 0.16;
 
