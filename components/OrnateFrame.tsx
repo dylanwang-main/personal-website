@@ -18,8 +18,10 @@ export default function OrnateFrame({
 
   return (
     <div className="flex w-full flex-col items-center gap-4">
+      {/* Width capped on mobile: full-width at 2:3 would be a canvas taller
+          than the screen. Desktop splits the row five ways, so no cap there. */}
       <div
-        className={`relative w-full p-1 transition-shadow duration-300 ${
+        className={`relative w-full max-w-[220px] p-1 transition-shadow duration-300 md:max-w-none ${
           isGold
             ? "shadow-[0_0_0_1px_var(--gold-deep)] group-hover:shadow-[0_0_28px_rgba(212,175,55,0.45)]"
             : "shadow-[0_0_0_1px_var(--frame)] group-hover:shadow-[0_0_16px_rgba(0,0,0,0.18)]"
@@ -47,8 +49,9 @@ export default function OrnateFrame({
             />
           ))}
 
+          {/* Portrait 2:3, the proportion a canvas is actually stretched to */}
           <div
-            className="flex h-32 w-full items-center justify-center bg-panel text-sm text-muted md:h-40"
+            className="flex aspect-[2/3] w-full items-center justify-center bg-panel text-sm text-muted"
             style={{ boxShadow: "inset 0 2px 10px rgba(0,0,0,0.25)" }}
           >
             {placeholder}

@@ -34,6 +34,39 @@ export const entrance = {
   doorLabel: "Enter the museum",
 };
 
+/**
+ * TEMPORARY / PLACEHOLDER navigation.
+ *
+ * The header is a stopgap so every page has a shell to sit in. Its links are
+ * generated from `exhibits` below, so the five rooms never drift out of sync.
+ * Both the structure (a flat bar of five links) and the styling are expected to
+ * be revisited once the museum experience is locked in — the intended way in is
+ * still the entrance door, not this bar.
+ */
+export const nav = {
+  /** Accessible name for the header landmark */
+  label: "Rooms",
+  homeLabel: "Digital Museum",
+};
+
+/**
+ * TEMPORARY / PLACEHOLDER footer. Fills out the page shell, not a design focus.
+ *
+ * `links` are the social profiles, rendered as one group. `contact` is rendered
+ * apart from them, hard right — it is the only one that asks for a reply.
+ * Every href here is a placeholder awaiting the real handles/address.
+ */
+export const footer = {
+  copyright: "© 2026 Dylan Wang. All rights reserved.",
+  links: [
+    { label: "LinkedIn", href: "#" },
+    { label: "Instagram", href: "#" },
+    { label: "TikTok", href: "#" },
+    { label: "YouTube", href: "#" },
+  ],
+  contact: { label: "Contact", href: "mailto:hello@example.com" },
+};
+
 export const hall = {
   heading: "Main Hall",
   exitLabel: "Exit",

@@ -21,7 +21,7 @@ export default function ThemeToggle() {
       type="button"
       onClick={toggle}
       aria-label="Toggle dark mode"
-      className="fixed bottom-4 right-4 z-50 rounded-full border border-frame bg-panel px-4 py-2 text-sm text-ink shadow-sm transition hover:scale-105"
+      className="shrink-0 rounded-full border border-frame bg-panel/70 px-3 py-1.5 text-xs whitespace-nowrap text-ink transition hover:scale-105"
       suppressHydrationWarning
     >
       {isDark ? "Light mode" : "Dark mode"}
