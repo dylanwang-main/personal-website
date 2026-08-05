@@ -3,6 +3,14 @@
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { usePathname } from "next/navigation";
 
+/**
+ * The single owner of route-level entry/exit motion. Pages must not add their own
+ * mount animation on top — two entry animations per navigation reads as the
+ * transition playing twice.
+ *
+ * `initial={false}` suppresses the animation on first load, which also means a
+ * React Strict Mode remount in development has nothing to replay.
+ */
 export default function PageTransition({
   children,
 }: {
