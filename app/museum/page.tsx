@@ -8,6 +8,7 @@ import CurtainPanels, { CURTAIN_DURATION } from "@/components/CurtainPanels";
 import ZoomVoid, { type Rect } from "@/components/ZoomVoid";
 import { ZOOM_DURATION } from "@/lib/motion";
 import { exhibits, hall } from "@/content/content";
+import Probe from "@/components/__Probe";
 
 type Zoom = { slug: string; rect: Rect; gold: boolean };
 /**
@@ -101,6 +102,7 @@ export default function Museum() {
 
   return (
     <main className="relative flex flex-1 flex-col items-center gap-12 px-6 py-10">
+      <Probe where="museum" />
       <h1 className="text-3xl">{hall.heading}</h1>
 
       <div className="flex w-full max-w-6xl flex-col gap-10 md:flex-row md:items-start">
