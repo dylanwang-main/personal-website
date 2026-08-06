@@ -22,6 +22,19 @@ export type Exhibit = {
   /** One line under the heading. A hook, not a sentence of body copy. */
   subtitle: string;
   /**
+   * A few words for the teaser placards on the entrance page. Shorter than
+   * `subtitle` on purpose — the strip is read on the way past the door, not
+   * studied, and these are not links.
+   */
+  teaser: string;
+  /**
+   * The room's artwork: the canvas hung in the hall AND the banner at the top of
+   * the exhibit page. One field, because the two are the same object — the
+   * painting-click transition morphs one into the other, so a mismatch would be
+   * visible as the image changing mid-flight.
+   */
+  cover: ExhibitImage;
+  /**
    * Body copy, one string per paragraph. Every exhibit runs intro ->
    * process/detail -> closing thought, so the rooms read as one museum rather
    * than five separately written pages.
@@ -69,6 +82,14 @@ export const entrance = {
   /** Path under /public for the portrait. Empty = placeholder box */
   image: "",
   imagePlaceholder: "Photo",
+  /**
+   * The teaser strip near the foot of the entrance. Deliberately not links —
+   * the door is the only way in, and this is the view of the rooms from outside
+   * it. Copy comes from each exhibit's `teaser`, so the strip cannot list a room
+   * the museum does not have.
+   */
+  roomsLabel: "Behind the door",
+  roomsNote: "Five rooms. The door is the only way in.",
   /** Accessible name for the door, which is the only way in */
   doorLabel: "Enter the museum",
 };
@@ -109,8 +130,6 @@ export const footer = {
 export const hall = {
   heading: "Main Hall",
   exitLabel: "Exit",
-  /** Placeholder text shown inside a frame with no image yet */
-  imagePlaceholder: "Image",
 };
 
 export const exhibitPage = {
@@ -153,6 +172,8 @@ export const exhibits: Exhibit[] = [
     slug: "projects",
     name: "Projects",
     subtitle: "Placeholder hook — things taken from idea to finished.",
+    teaser: "Finished things, and what they cost.",
+    cover: { src: "", label: "Projects — the wall" },
     paragraphs: [
       "Placeholder intro for the Projects room. A few sentences setting up what counts as a project here and why these particular ones are hung on the wall rather than the dozens that never left a notebook.",
       "Placeholder detail paragraph. This is where the process goes: what the constraint was, what got built, what broke on the way, and what the finished thing actually does for the person using it. Real copy will name specific projects and link out to them.",
@@ -168,6 +189,8 @@ export const exhibits: Exhibit[] = [
     slug: "currently-building",
     name: "Currently Building",
     subtitle: "Placeholder hook — the wet paint room.",
+    teaser: "Wet paint. Unfinished on purpose.",
+    cover: { src: "", label: "Currently Building — the wall" },
     paragraphs: [
       "Placeholder intro for Currently Building. A short framing of this as a living exhibit: whatever is here is unfinished on purpose, and the room is expected to look different a month from now.",
       "Placeholder detail paragraph. The work in progress itself — what is being tried, what is still unresolved, and the open question currently being chewed on. Real copy will be dated so a stale entry is obvious at a glance.",
@@ -183,6 +206,8 @@ export const exhibits: Exhibit[] = [
     name: "Content Creation",
     subtitle:
       "Placeholder hook — the featured wall: writing, video, everything published.",
+    teaser: "Writing, video, everything published.",
+    cover: { src: "", label: "Content Creation — the wall" },
     paragraphs: [
       "Placeholder intro for Content Creation, the featured exhibit. A few sentences on what gets made, where it goes, and who it is for — the reason this room gets the gold frame in the hall.",
       "Placeholder detail paragraph. The process end: how an idea becomes a post or a video, what the editing loop looks like, and which formats have earned their keep. Real copy will point at specific pieces and the platforms they live on.",
@@ -199,6 +224,8 @@ export const exhibits: Exhibit[] = [
     slug: "hobbies",
     name: "Hobbies",
     subtitle: "Placeholder hook — what the hours outside work go to.",
+    teaser: "Hours spent with nothing riding on them.",
+    cover: { src: "", label: "Hobbies — the wall" },
     paragraphs: [
       "Placeholder intro for the Hobbies room. A short setup of the handful of things done purely because they are enjoyable, with no outcome attached to them.",
       "Placeholder detail paragraph. What each one actually involves week to week, how long it has been going, and what stuck versus what got tried once and quietly abandoned.",
@@ -213,6 +240,8 @@ export const exhibits: Exhibit[] = [
     slug: "travels",
     name: "Travels",
     subtitle: "Placeholder hook — places visited, and what came back with me.",
+    teaser: "Places gone, and what came back.",
+    cover: { src: "", label: "Travels — the wall" },
     paragraphs: [
       "Placeholder intro for the Travels room. A few sentences on where the map has been filled in so far and what tends to get sought out on arrival.",
       "Placeholder detail paragraph. One or two trips in more depth — the route, what was misjudged in the planning, and the small specific thing that ended up being the memorable part rather than the headline sight.",

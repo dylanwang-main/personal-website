@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { usePathname } from "next/navigation";
+import { usePushIn } from "@/components/PushIn";
 
 /**
  * False until the first render of a page load has been committed.
@@ -31,9 +32,16 @@ let navigable = false;
  * mounts once.
  *
  * Nothing is lost by dropping the exit. Every route change is already covered by
- * a purpose-built overlay that owns the "leaving" beat — ThresholdZoom on the
- * way in, ZoomVoid into an exhibit, CurtainPanels on the way out — so the fade
- * was a second, redundant transition layered under them.
+ * something that owns the "leaving" beat — ThresholdZoom on the way in, the
+ * push-in view transition into an exhibit, CurtainPanels on the way out — so the
+ * fade was a second, redundant transition layered under them.
+ *
+ * It also stands down for the one route change that is not covered by an
+ * overlay: walking into a painting, which is a view transition. That one already
+ * owns both sides of the cut, and the fade here would fight it twice over — the
+ * incoming page is captured for the transition on the frame it mounts, so an
+ * `initial` of `opacity: 0` would be baked into the snapshot the visitor watches
+ * arrive, and the fade would then replay on the live DOM afterwards.
  *
  * One tree, always. Returning a plain div for reduced motion instead would mean
  * the server — which cannot read a media query — rendered the animated branch
@@ -50,12 +58,13 @@ export default function PageTransition({
 }) {
   const pathname = usePathname();
   const reduceMotion = useReducedMotion();
+  const pushIn = usePushIn();
 
   useEffect(() => {
     navigable = true;
   }, []);
 
-  const animated = navigable && !reduceMotion;
+  const animated = navigable && !reduceMotion && pushIn.slug === null;
 
   return (
     <motion.div

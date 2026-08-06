@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import ExhibitBanner from "@/components/ExhibitBanner";
 import type { Exhibit } from "@/content/content";
 import { exhibitPage, featuredExhibitPage } from "@/content/content";
 
@@ -41,6 +42,10 @@ export default function FeaturedExhibitReveal({
 
   return (
     <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-14 px-6 py-16">
+      {/* The canvas walked into. First thing on the page because the push-in
+          lands on it — see ExhibitBanner. */}
+      <ExhibitBanner exhibit={exhibit} sizes="(min-width: 1024px) 64rem, 100vw" />
+
       {/* Heading rail. Left-aligned and bottom-aligned against the subtitle:
           the standard rooms centre all three lines, this one sets them in
           opposition across the full width. */}

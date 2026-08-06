@@ -1,10 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
+import ExhibitBanner from "@/components/ExhibitBanner";
 import type { Exhibit } from "@/content/content";
 import { exhibitPage } from "@/content/content";
 
 /**
- * An exhibit room: heading, hook, body, and the room's own small gallery.
+ * An exhibit room: the room's artwork, heading, hook, body, and its own small
+ * gallery.
  *
  * Everything rendered here comes from the exhibit's entry in content.ts, and no
  * field is optional — all five rooms have the same shape, so the layout is
@@ -19,6 +21,10 @@ export default function ExhibitReveal({ exhibit }: { exhibit: Exhibit }) {
 
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-10 px-6 py-16">
+      {/* The canvas walked into. First thing on the page because the push-in
+          lands on it — see ExhibitBanner. */}
+      <ExhibitBanner exhibit={exhibit} sizes="(min-width: 768px) 48rem, 100vw" />
+
       <header className="flex flex-col items-center gap-3 text-center">
         <h1 className="text-3xl">{name}</h1>
         <p className="max-w-xl font-display text-lg text-muted italic">
