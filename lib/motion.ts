@@ -56,12 +56,22 @@ export const DOOR_CRACK = 0.16;
 export const DOOR_SWING = 0.34;
 
 /**
- * Painting frame expanding to fill the viewport, before navigating.
+ * Walking into a painting: the canvas morphing into the exhibit's banner while
+ * the hall pushes past the camera.
  *
- * Deliberately short: the hall is browsed repeatedly, so this one has to stay
- * out of the way. It is not the entrance threshold — see THRESHOLD_DURATION.
+ * Deliberately short. The hall is browsed repeatedly, so this one has to stay
+ * out of the way — it is a quarter of the entrance threshold, which is the grand
+ * one-time moment. See THRESHOLD_DURATION.
+ *
+ * The animation itself is CSS, on the view transition pseudo-elements; these two
+ * are the same numbers as `--push-duration` and `--push-settle` in globals.css,
+ * and exist so the code that tears the transition down knows when it is over.
+ * Change one, change both.
  */
-export const ZOOM_DURATION = 0.4;
+export const PUSH_DURATION = 0.42;
+
+/** How long the exhibit's content waits for the push to settle before arriving. */
+export const PUSH_SETTLE = 0.26;
 
 /**
  * Stepping through the entrance door. The site's signature moment and a

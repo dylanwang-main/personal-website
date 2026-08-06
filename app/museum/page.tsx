@@ -1,32 +1,33 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, ViewTransition } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { useRouter } from "next/navigation";
+import Canvas from "@/components/Canvas";
 import OrnateFrame from "@/components/OrnateFrame";
 import CurtainPanels, { CURTAIN_DURATION } from "@/components/CurtainPanels";
-import ZoomVoid, { type Rect } from "@/components/ZoomVoid";
-import { ZOOM_DURATION } from "@/lib/motion";
+import {
+  armPushIn,
+  canvasName,
+  disarmPushIn,
+  usePushIn,
+} from "@/components/PushIn";
 import { exhibits, hall } from "@/content/content";
-
-type Zoom = { slug: string; rect: Rect; gold: boolean };
-/**
- * `arming` is one frame long and exists so the zoom starts at the painting that
- * was clicked. ZoomVoid is positioned from state, so the frame's rect and
- * `active` cannot be flipped in the same commit — the browser would never hold
- * the rect, and the growth would run from the overlay's default position in the
- * top-left corner instead of from the frame.
- */
-type Phase = "idle" | "arming" | "zooming" | "exiting";
 
 export default function Museum() {
   const router = useRouter();
   const reduceMotion = useReducedMotion();
-  // One phase drives every animation on this page, so no two can run at once and
-  // none can be re-triggered while one is in flight.
-  const [phase, setPhase] = useState<Phase>("idle");
-  const [zoom, setZoom] = useState<Zoom | null>(null);
+  const pushIn = usePushIn();
+  const [exiting, setExiting] = useState(false);
   const navigated = useRef(false);
+
+  // The hall is never where a push-in lands, so anything still armed when it
+  // mounts belongs to a walk-in that did not complete — a visitor who went
+  // straight back, say. Left armed, it would scale and blur whichever navigation
+  // came next.
+  useEffect(() => {
+    disarmPushIn();
+  }, []);
 
   function go(href: string) {
     if (navigated.current) return;
@@ -35,14 +36,18 @@ export default function Museum() {
   }
 
   function busy() {
-    return phase !== "idle" || navigated.current;
+    return exiting || pushIn.slug !== null || navigated.current;
   }
 
-  function openExhibit(
-    slug: string,
-    gold: boolean,
-    e: React.MouseEvent<HTMLButtonElement>,
-  ) {
+  /**
+   * Walk into a painting.
+   *
+   * Nothing is animated from here. Naming the clicked canvas is the whole of the
+   * work — the browser morphs it into the exhibit's banner because the same name
+   * appears on both pages, and globally scoped CSS pushes the rest of the hall
+   * past the camera. See PushIn for the full shape of the move.
+   */
+  function enterExhibit(slug: string, e: React.MouseEvent<HTMLButtonElement>) {
     if (busy()) return;
 
     if (reduceMotion) {
@@ -50,15 +55,12 @@ export default function Museum() {
       return;
     }
 
-    // The frame as it sits on screen right now, hover scale included — the zoom
-    // has to start from exactly what the visitor clicked.
+    // The camera pushes from the centre of what was clicked, hover scale
+    // included, in viewport pixels — which is the coordinate space the root
+    // snapshot is captured in.
     const r = e.currentTarget.getBoundingClientRect();
-    setZoom({
-      slug,
-      gold,
-      rect: { top: r.top, left: r.left, width: r.width, height: r.height },
-    });
-    setPhase("arming");
+    armPushIn({ x: r.left + r.width / 2, y: r.top + r.height / 2 });
+    pushIn.begin(slug);
   }
 
   function leaveMuseum() {
@@ -68,66 +70,78 @@ export default function Museum() {
       go("/exit");
       return;
     }
-    setPhase("exiting");
+    setExiting(true);
   }
 
-  // Both transitions navigate on their own duration, from the one phase that
-  // owns them. Strict Mode re-invoking this effect clears the pending timer
-  // before setting a new one, so each still fires exactly once.
+  // Navigating from an effect rather than from the click handler, and this is the
+  // reason the interaction needs state at all: the clicked canvas has to be
+  // wrapped in a committed <ViewTransition> before the navigation starts, because
+  // that is the tree the outgoing side of the morph is captured from. Do both in
+  // the handler and the capture finds a hall where nothing is named, leaving the
+  // exhibit banner with nothing to morph from. An effect is enough — it runs
+  // after the commit that added the wrapper — and it is deliberately not deferred
+  // any further than that: a frame callback would never fire in a tab that is not
+  // being painted, which would strand the visitor on the hall.
   useEffect(() => {
-    // Hand the overlay one frame parked on the clicked frame's rect, then let
-    // it grow from there.
-    if (phase === "arming") {
-      const frame = requestAnimationFrame(() =>
-        setPhase((p) => (p === "arming" ? "zooming" : p)),
-      );
-      return () => cancelAnimationFrame(frame);
-    }
-
-    if (phase === "zooming" && zoom) {
-      const timer = setTimeout(
-        () => go(`/museum/${zoom.slug}`),
-        ZOOM_DURATION * 1000,
-      );
-      return () => clearTimeout(timer);
-    }
-
-    if (phase === "exiting") {
-      const timer = setTimeout(() => go("/exit"), CURTAIN_DURATION * 1000);
-      return () => clearTimeout(timer);
-    }
+    if (!pushIn.slug) return;
+    go(`/museum/${pushIn.slug}`);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [phase, zoom]);
+  }, [pushIn.slug]);
+
+  // The exit keeps its own timer: the curtains are an overlay, not a view
+  // transition, so nothing else knows when they have finished closing.
+  useEffect(() => {
+    if (!exiting) return;
+    const timer = setTimeout(() => go("/exit"), CURTAIN_DURATION * 1000);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [exiting]);
 
   return (
     <main className="relative flex flex-1 flex-col items-center gap-12 px-6 py-10">
       <h1 className="text-3xl">{hall.heading}</h1>
 
       <div className="flex w-full max-w-6xl flex-col gap-10 md:flex-row md:items-start">
-        {exhibits.map((exhibit) => (
-          <motion.button
-            key={exhibit.slug}
-            type="button"
-            onClick={(e) =>
-              openExhibit(exhibit.slug, Boolean(exhibit.featured), e)
-            }
-            whileHover={reduceMotion ? undefined : { scale: 1.04 }}
-            transition={{ duration: 0.25 }}
-            className="group flex-1 cursor-pointer text-left"
-            style={{
-              visibility:
-                phase === "zooming" && zoom?.slug === exhibit.slug
-                  ? "hidden"
-                  : "visible",
-            }}
-          >
-            <OrnateFrame
-              tone={exhibit.featured ? "gold" : "neutral"}
-              name={exhibit.name}
-              placeholder={hall.imagePlaceholder}
+        {exhibits.map((exhibit) => {
+          // Only the canvas being walked into may be named — see PushIn.
+          const walkingIn = pushIn.slug === exhibit.slug;
+
+          const canvas = (
+            <Canvas
+              image={exhibit.cover}
+              sizes="(min-width: 768px) 20vw, 220px"
+              className="aspect-[2/3] w-full"
             />
-          </motion.button>
-        ))}
+          );
+
+          return (
+            <motion.button
+              key={exhibit.slug}
+              type="button"
+              onClick={(e) => enterExhibit(exhibit.slug, e)}
+              whileHover={reduceMotion ? undefined : { scale: 1.04 }}
+              transition={{ duration: 0.25 }}
+              className="group flex-1 cursor-pointer text-left"
+            >
+              <OrnateFrame
+                tone={exhibit.featured ? "gold" : "neutral"}
+                name={exhibit.name}
+              >
+                {walkingIn ? (
+                  <ViewTransition
+                    name={canvasName(exhibit.slug)}
+                    share="canvas"
+                    default="none"
+                  >
+                    {canvas}
+                  </ViewTransition>
+                ) : (
+                  canvas
+                )}
+              </OrnateFrame>
+            </motion.button>
+          );
+        })}
       </div>
 
       {/* Clear of the fixed header */}
@@ -139,20 +153,9 @@ export default function Museum() {
         {hall.exitLabel}
       </button>
 
-      {/* Stepping into the painting. Always mounted — see ZoomVoid. */}
-      <ZoomVoid
-        from={zoom?.rect ?? null}
-        active={phase === "zooming"}
-        background={
-          zoom?.gold
-            ? "linear-gradient(135deg, var(--gold), var(--gold-deep))"
-            : "linear-gradient(135deg, var(--frame), var(--ink))"
-        }
-      />
-
       {/* Curtains sit parted off-screen until the visitor leaves. */}
       <div className="pointer-events-none fixed inset-0 z-50">
-        <CurtainPanels open={phase !== "exiting"} />
+        <CurtainPanels open={!exiting} />
       </div>
     </main>
   );

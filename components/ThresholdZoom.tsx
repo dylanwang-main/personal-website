@@ -2,7 +2,9 @@
 
 import { motion } from "framer-motion";
 import { EASE_PUSH, THRESHOLD_DURATION } from "@/lib/motion";
-import type { Rect } from "@/components/ZoomVoid";
+
+/** A measured on-screen box, in viewport pixels. */
+export type Rect = { top: number; left: number; width: number; height: number };
 
 const NOWHERE: Rect = { top: 0, left: 0, width: 0, height: 0 };
 
@@ -21,9 +23,10 @@ const NOWHERE: Rect = { top: 0, left: 0, width: 0, height: 0 };
  *      settles onto — the next route mounts on that same colour, so the
  *      navigation lands inside the move instead of cutting against it.
  *
- * Same always-mounted, `initial={false}` contract as ZoomVoid: it holds the
- * state it is given and only moves when `active` flips, so nothing animates on
- * mount and Strict Mode has nothing to replay.
+ * Deliberately always mounted and `initial={false}`: it holds the state it is
+ * given and only moves when `active` flips, so nothing animates on mount and
+ * Strict Mode — which remounts every newly mounted component in development, and
+ * so replays mount-time animations — has nothing to replay.
  */
 export default function ThresholdZoom({
   from,

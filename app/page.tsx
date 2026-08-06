@@ -4,14 +4,14 @@ import { useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion, useTransform } from "framer-motion";
 import { useRouter } from "next/navigation";
 import AmbientField from "@/components/AmbientField";
+import Canvas from "@/components/Canvas";
 import DoorGraphic, { type DoorPhase } from "@/components/DoorGraphic";
 import KineticTagline from "@/components/KineticTagline";
 import Placard from "@/components/Placard";
-import ThresholdZoom from "@/components/ThresholdZoom";
-import { type Rect } from "@/components/ZoomVoid";
+import ThresholdZoom, { type Rect } from "@/components/ThresholdZoom";
 import { useCursorParallax } from "@/lib/useCursorParallax";
 import { DOOR_SWING, EASE_PUSH, THRESHOLD_DURATION } from "@/lib/motion";
-import { entrance } from "@/content/content";
+import { entrance, exhibits } from "@/content/content";
 
 /**
  * The entrance. The arrival veil that plays over this on a first visit is not
@@ -154,13 +154,15 @@ export default function Home() {
 
         {/* Support: the bio the entrance used to lead with, now reading as the
             placard wall beside the door rather than as the headline. */}
-        <section className="mx-auto grid w-full max-w-4xl grid-cols-1 gap-10 px-6 pt-4 pb-20 md:grid-cols-[minmax(0,14rem)_minmax(0,1fr)]">
-          <div
-            className="flex items-center justify-center border border-frame bg-panel text-muted"
-            style={{ height: "clamp(140px, 20vh, 200px)" }}
-          >
-            {entrance.imagePlaceholder}
-          </div>
+        <section className="mx-auto grid w-full max-w-5xl grid-cols-1 gap-10 px-6 pt-4 pb-20 md:grid-cols-[minmax(0,20rem)_minmax(0,1fr)]">
+          {/* Hung, not inset: a portrait at the scale of the copy beside it,
+              rather than a thumbnail the text has to be read around. Capped on
+              mobile, where a full-width 4:5 would fill most of the screen. */}
+          <Canvas
+            image={{ src: entrance.image, label: entrance.imagePlaceholder }}
+            sizes="(min-width: 768px) 20rem, 18rem"
+            className="aspect-[4/5] w-full max-w-[18rem] justify-self-center border border-frame md:max-w-none md:justify-self-stretch"
+          />
 
           <div className="flex flex-col gap-6">
             <div className="flex flex-col gap-3">
@@ -187,6 +189,33 @@ export default function Home() {
                 />
               ))}
             </div>
+          </div>
+        </section>
+
+        {/* The five rooms, seen from outside the door.
+            Not links, and not markup that could become links by accident: the
+            door is the only way into the museum, and a shortcut here would make
+            it decorative. So this is the same placard the bio above uses — same
+            hairline, same small caps, same weight — which keeps it a label on the
+            way past rather than a second call to action competing with the door.
+            Copy comes from each exhibit's own `teaser`, so the strip cannot list
+            a room the museum does not have. */}
+        <section className="mx-auto flex w-full max-w-5xl flex-col gap-7 px-6 pb-24">
+          <div className="flex flex-col gap-1">
+            <h2 className="text-xs tracking-[0.16em] text-muted uppercase">
+              {entrance.roomsLabel}
+            </h2>
+            <p className="text-sm text-muted">{entrance.roomsNote}</p>
+          </div>
+
+          <div className="grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-2 lg:grid-cols-5">
+            {exhibits.map((exhibit) => (
+              <Placard
+                key={exhibit.slug}
+                label={exhibit.name}
+                value={exhibit.teaser}
+              />
+            ))}
           </div>
         </section>
       </div>

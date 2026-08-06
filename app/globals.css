@@ -57,3 +57,155 @@ h3 {
   outline: 2px solid var(--gold-deep);
   outline-offset: 2px;
 }
+
+/* ==========================================================================
+   Walking into a painting
+   ==========================================================================
+   The hall's paintings and the banner at the top of each exhibit page are the
+   same object at two distances, and this is the move between them. Three layers,
+   all timed off the same two durations so they read as one:
+
+     the canvas    morphs from frame to banner, and is the only thing that stays
+                   sharp and legible the whole way — it is what is being walked
+                   into, so it must never be the part that is hard to look at;
+     the hall      scales up and blurs out about the point that was clicked, so
+                   the growth reads as the camera moving forward past the frame
+                   rather than as a rectangle getting bigger;
+     the room      arrives after that has settled, not with it, so the sequence
+                   is arrival and then reading.
+
+   Sequencing lives here rather than in JS. See PushIn for who arms it, and
+   lib/motion.ts for the same two numbers in seconds — the code that tears the
+   transition down needs to know when it is over, so if one changes so must the
+   other. */
+:root {
+  --push-duration: 420ms;
+  --push-settle: 260ms;
+  /* EASE_PUSH — slow to leave, accelerating, settling. A dolly, not a wipe. */
+  --push-ease: cubic-bezier(0.72, 0, 0.24, 1);
+  /* Overwritten in viewport pixels at click time; the centre only ever applies
+     if something arms the push without measuring first. */
+  --push-origin-x: 50vw;
+  --push-origin-y: 50vh;
+}
+
+/* Off unless armed. Every other route change on the site is already carried by a
+   purpose-built overlay — the entrance threshold, the exit curtains — or by
+   PageTransition's fade, and the browser's default root crossfade would be a
+   second transition layered under those. */
+::view-transition-group(root),
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-name: none;
+}
+
+/* Longhands, not the `animation` shorthand. The arriving half needs both a
+   duration and a delay, and the shorthand's two-<time> form did not take on
+   these pseudo-elements — the rule resolved to no animation at all, which reads
+   as the room appearing instantly under a hall that is still leaving. */
+:root[data-push]::view-transition-old(root) {
+  animation-name: push-past;
+  animation-duration: var(--push-duration);
+  animation-timing-function: var(--push-ease);
+  animation-fill-mode: both;
+  transform-origin: var(--push-origin-x) var(--push-origin-y);
+  /* Stacked, not blended. Naming an animation drops the UA's plus-lighter
+     crossfade pair, and plus-lighter would brighten the hall as it left rather
+     than let it go dark. */
+  mix-blend-mode: normal;
+}
+
+:root[data-push]::view-transition-new(root) {
+  animation-name: push-arrive;
+  animation-duration: var(--push-settle);
+  animation-delay: var(--push-duration);
+  animation-timing-function: ease-out;
+  animation-fill-mode: both;
+  mix-blend-mode: normal;
+}
+
+@keyframes push-past {
+  from {
+    transform: scale(1);
+    filter: blur(0);
+    opacity: 1;
+  }
+  to {
+    transform: scale(1.26);
+    filter: blur(14px);
+    opacity: 0;
+  }
+}
+
+@keyframes push-arrive {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* The canvas. Its group carries the whole shape change — position, size, aspect
+   ratio — over the full push, on the same curve as the hall it is coming out of,
+   so the two read as one move. No blur on either half: this is the thing being
+   looked at, and the reason the visitor clicked. */
+:root[data-push]::view-transition-group(.canvas) {
+  animation-duration: var(--push-duration);
+  animation-timing-function: var(--push-ease);
+}
+
+/* The crossfade between the two snapshots is cut well short of the shape change,
+   so the canvas is not a lingering double exposure of a small painting and a wide
+   banner. The UA's own fade and its plus-lighter blend are both left in place —
+   only retimed — because that pair is what keeps a crossfade from dipping dark
+   through the middle. */
+:root[data-push]::view-transition-old(.canvas),
+:root[data-push]::view-transition-new(.canvas) {
+  animation-duration: 160ms;
+  animation-timing-function: ease-out;
+}
+
+/* The hall does not arm the push for these visitors, so a push-in should never
+   reach here — this is the safety net for a preference that changes between the
+   click and the transition. Zero group duration removes the morph itself, which
+   is the scale; what is left is a plain crossfade, with no blur anywhere. */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*) {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+  }
+  ::view-transition-old(*) {
+    animation: 140ms linear both push-fade reverse !important;
+  }
+  ::view-transition-new(*) {
+    animation: 140ms linear both push-fade !important;
+  }
+}
+
+@keyframes push-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* The header is the one thing that must not move, on any navigation and under
+   any preference. Named, so it is lifted out of the root snapshot the push
+   scales; `display: none` on the outgoing copy stops the two briefly showing at
+   once. Last in the file, and `!important`, so it also wins over the blanket
+   reduced-motion crossfade above. */
+::view-transition-group(site-header) {
+  animation: none !important;
+  z-index: 100;
+}
+::view-transition-old(site-header) {
+  display: none !important;
+}
+::view-transition-new(site-header) {
+  animation: none !important;
+}

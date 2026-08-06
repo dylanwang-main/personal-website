@@ -11,12 +11,21 @@ import { exhibits, nav } from "@/content/content";
  *
  * Frosted glass: it sits above the page and lets it show through, so the wall
  * colour behind stays readable in both themes.
+ *
+ * `viewTransitionName` pins it during the push-in into an exhibit. Naming an
+ * element lifts it out of the root snapshot, which is the one that gets scaled
+ * and blurred, so the bar holds still while the room pushes past behind it — the
+ * fixed reference point that keeps the move reading as a camera rather than as
+ * the whole viewport lurching. See globals.css.
  */
 export default function SiteHeader() {
   return (
     <header
       className="fixed top-0 right-0 left-0 z-30 h-14 border-b border-frame/40 bg-wall/55 backdrop-blur-xl backdrop-saturate-150"
-      style={{ boxShadow: "inset 0 1px 0 rgba(255,255,255,0.06)" }}
+      style={{
+        boxShadow: "inset 0 1px 0 rgba(255,255,255,0.06)",
+        viewTransitionName: "site-header",
+      }}
     >
       <div className="mx-auto flex h-full max-w-6xl items-center gap-6 px-6">
         <Link

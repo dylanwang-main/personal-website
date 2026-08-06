@@ -5,14 +5,24 @@ const corners = [
   "bottom-1 right-1",
 ];
 
+/**
+ * A framed canvas on the hall wall: moulding, corner studs, and whatever the
+ * caller hangs inside it.
+ *
+ * The canvas is a slot rather than a prop because the painting-click transition
+ * has to name that element and nothing around it — the moulding belongs to the
+ * hall and is pushed past the camera, the canvas is the object that survives the
+ * cut. See PushIn.
+ */
 export default function OrnateFrame({
   tone,
   name,
-  placeholder,
+  children,
 }: {
   tone: "gold" | "neutral";
   name: string;
-  placeholder: string;
+  /** The canvas. Expected to fill the width it is given and set its own height. */
+  children: React.ReactNode;
 }) {
   const isGold = tone === "gold";
 
@@ -42,20 +52,12 @@ export default function OrnateFrame({
               key={position}
               className={`absolute h-2 w-2 rotate-45 ${position}`}
               style={{
-                background: isGold
-                  ? "#fff6da"
-                  : "rgba(255,255,255,0.45)",
+                background: isGold ? "#fff6da" : "rgba(255,255,255,0.45)",
               }}
             />
           ))}
 
-          {/* Portrait 2:3, the proportion a canvas is actually stretched to */}
-          <div
-            className="flex aspect-[2/3] w-full items-center justify-center bg-panel text-sm text-muted"
-            style={{ boxShadow: "inset 0 2px 10px rgba(0,0,0,0.25)" }}
-          >
-            {placeholder}
-          </div>
+          {children}
         </div>
       </div>
 
