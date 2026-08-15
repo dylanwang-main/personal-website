@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { usePathname } from "next/navigation";
-import { usePushIn } from "@/components/PushIn";
+import { clearMorph, pendingMorph } from "@/components/Morph";
 
 /**
  * False until the first render of a page load has been committed.
@@ -33,15 +33,16 @@ let navigable = false;
  *
  * Nothing is lost by dropping the exit. Every route change is already covered by
  * something that owns the "leaving" beat — ThresholdZoom on the way in, the
- * push-in view transition into an exhibit, CurtainPanels on the way out — so the
- * fade was a second, redundant transition layered under them.
+ * frame flying out of the wall into an exhibit, CurtainPanels on the way out —
+ * so the fade was a second, redundant transition layered under them.
  *
- * It also stands down for the one route change that is not covered by an
- * overlay: walking into a painting, which is a view transition. That one already
- * owns both sides of the cut, and the fade here would fight it twice over — the
- * incoming page is captured for the transition on the frame it mounts, so an
- * `initial` of `opacity: 0` would be baked into the snapshot the visitor watches
- * arrive, and the fade would then replay on the live DOM afterwards.
+ * It also stands down for the route changes that are not covered by an overlay:
+ * walking into a painting and walking back out of one, which are framer shared
+ * layout animations on the live DOM. The frame is inside this wrapper, so fading
+ * the wrapper in would fade the very element that is supposed to be arriving as
+ * one continuous object — and an opacity change on an ancestor is exactly what
+ * turns a morph back into a crossfade. The exhibit's copy is held back instead,
+ * by MorphReveal, which animates around the frame rather than over it.
  *
  * One tree, always. Returning a plain div for reduced motion instead would mean
  * the server — which cannot read a media query — rendered the animated branch
@@ -58,13 +59,20 @@ export default function PageTransition({
 }) {
   const pathname = usePathname();
   const reduceMotion = useReducedMotion();
-  const pushIn = usePushIn();
+  // Read during render, before the flag is consumed below: this is the commit
+  // the arriving page mounts in, and standing down has to be decided here.
+  const morphing = pendingMorph() !== null;
 
+  // Keyed to the route rather than to mount, because this component never
+  // unmounts — only the wrapper below is rebuilt per navigation. Clearing the
+  // morph flag from here is the teardown for the whole mechanism: a parent's
+  // effect runs after its children's, so both readers have latched by now.
   useEffect(() => {
     navigable = true;
-  }, []);
+    clearMorph();
+  }, [pathname]);
 
-  const animated = navigable && !reduceMotion && pushIn.slug === null;
+  const animated = navigable && !reduceMotion && !morphing;
 
   return (
     <motion.div

@@ -56,22 +56,32 @@ export const DOOR_CRACK = 0.16;
 export const DOOR_SWING = 0.34;
 
 /**
- * Walking into a painting: the canvas morphing into the exhibit's banner while
- * the hall pushes past the camera.
+ * Walking into a painting: the framed canvas in the hall morphing into the
+ * banner at the top of its exhibit page, and back again on the way out.
  *
- * Deliberately short. The hall is browsed repeatedly, so this one has to stay
- * out of the way — it is a quarter of the entrance threshold, which is the grand
- * one-time moment. See THRESHOLD_DURATION.
+ * Long enough to be watched rather than glimpsed — the frame travels most of the
+ * viewport and changes aspect ratio on the way, and under about 400ms that reads
+ * as a jump cut. Still a fraction of the entrance threshold, which is the grand
+ * one-time moment; this one is walked through repeatedly. See
+ * THRESHOLD_DURATION.
  *
- * The animation itself is CSS, on the view transition pseudo-elements; these two
- * are the same numbers as `--push-duration` and `--push-settle` in globals.css,
- * and exist so the code that tears the transition down knows when it is over.
- * Change one, change both.
+ * Unlike the rest of the file this is not a sequencing constant: framer drives
+ * the morph and knows when it is finished. It is shared so both sides of the
+ * morph animate on identical timing, and so the exhibit's copy can be delayed
+ * behind it.
  */
-export const PUSH_DURATION = 0.42;
+export const MORPH_DURATION = 0.5;
 
-/** How long the exhibit's content waits for the push to settle before arriving. */
-export const PUSH_SETTLE = 0.26;
+/**
+ * Symmetric ease for the morph. Eases out of the wall and into the banner with
+ * the same weight at both ends, because the same curve plays in reverse on the
+ * way back to the hall — an asymmetric curve would make the return trip feel
+ * like a different move.
+ */
+export const EASE_MORPH = [0.4, 0, 0.2, 1] as const;
+
+/** How long the exhibit's copy waits for the morph to settle before arriving. */
+export const MORPH_SETTLE = 0.3;
 
 /**
  * Stepping through the entrance door. The site's signature moment and a
