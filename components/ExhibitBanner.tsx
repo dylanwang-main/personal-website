@@ -1,22 +1,28 @@
 "use client";
 
-import { useEffect, useState, ViewTransition } from "react";
 import Canvas from "@/components/Canvas";
-import { canvasName, disarmPushIn, usePushIn } from "@/components/PushIn";
-import { PUSH_DURATION, PUSH_SETTLE } from "@/lib/motion";
+import OrnateFrame from "@/components/OrnateFrame";
+import { frameLayoutId } from "@/components/Morph";
 import type { Exhibit } from "@/content/content";
 
 /**
- * The room's artwork at the top of its page: the far side of the push-in.
+ * The room's framed artwork at the top of its page: the far side of the morph.
  *
- * It carries the same `view-transition-name` as the canvas that was clicked in
- * the hall, which is the whole of the morph — the browser interpolates one box
- * into the other. Nothing here animates on its own; the surrounding heading and
- * body are part of the root snapshot and arrive on a delay, so the move reads as
- * landing first and reading second.
+ * It is the same <OrnateFrame> that hangs in the hall, under the same
+ * `layoutId`, so framer treats the two as one element and flies the whole thing
+ * — moulding, studs, canvas — from the wall into this slot. The tone comes from
+ * the exhibit's own `featured` flag, which is the same flag that made the frame
+ * gold in the hall, so the featured room keeps its gold the whole way across
+ * instead of swapping to plain moulding on landing.
  *
- * No frame around it, deliberately. The moulding belongs to the wall the visitor
- * just walked through, and it is left behind with the rest of the hall.
+ * The id is applied unconditionally, on every render, including a direct load
+ * with no hall behind it. An unpaired id is inert — framer animates a layout id
+ * only when it finds two of them in one commit — and applying it conditionally
+ * is what would break the morph, since the condition would have to be known
+ * before the page it is being read on has mounted.
+ *
+ * Nothing here is timed. The heading and body below are held back by
+ * MorphReveal, so the room reads as landing first and being read second.
  */
 export default function ExhibitBanner({
   exhibit,
@@ -26,55 +32,17 @@ export default function ExhibitBanner({
   /** Passed to next/image. The two exhibit layouts run at different widths. */
   sizes: string;
 }) {
-  const pushIn = usePushIn();
-
-  /**
-   * Latched at first render rather than read live. The name may only be present
-   * for the navigation that is actually a push-in — a direct load or a header
-   * link has no canvas on the other side to morph from — but it also must not
-   * disappear while the transition is still running, which is what would happen
-   * if this tracked the context after it is torn down below.
-   */
-  const [arrived] = useState(() => pushIn.slug === exhibit.slug);
-
-  useEffect(() => {
-    if (!arrived) return;
-
-    // Released as soon as this page is mounted, not when the animation ends. Its
-    // only reader is PageTransition, which has already stood down for this render,
-    // and holding it any longer is actively dangerous: a visitor who goes back to
-    // the hall mid-push would arrive with a slug still set, and the hall walks
-    // into whatever slug it is handed.
-    pushIn.end();
-
-    // The attribute has to outlive that, because it is what scopes the CSS to
-    // this one navigation, and the transition offers no completion callback to
-    // hang it off — hence the same two constants the CSS is written in.
-    //
-    // Deliberately not cleared on unmount. Its whole job is to tidy up a document
-    // attribute, and it has to finish whether or not this component is still
-    // around — a visitor who leaves inside the first 680ms would otherwise leave
-    // the push armed for whatever they navigate to next. That also makes it safe
-    // under Strict Mode, which runs this effect twice in development: two timers
-    // that both remove the same attribute are indistinguishable from one.
-    setTimeout(disarmPushIn, (PUSH_DURATION + PUSH_SETTLE) * 1000);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [arrived]);
-
-  const canvas = (
-    <Canvas
-      image={exhibit.cover}
-      sizes={sizes}
-      className="w-full"
-      style={{ height: "clamp(200px, 40svh, 400px)" }}
-    />
-  );
-
-  if (!arrived) return canvas;
-
   return (
-    <ViewTransition name={canvasName(exhibit.slug)} share="canvas" default="none">
-      {canvas}
-    </ViewTransition>
+    <OrnateFrame
+      tone={exhibit.featured ? "gold" : "neutral"}
+      layoutId={frameLayoutId(exhibit.slug)}
+    >
+      <Canvas
+        image={exhibit.cover}
+        sizes={sizes}
+        className="w-full"
+        style={{ height: "clamp(200px, 40svh, 400px)" }}
+      />
+    </OrnateFrame>
   );
 }

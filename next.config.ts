@@ -1,15 +1,15 @@
 import type { NextConfig } from "next";
 
 /**
- * View transitions need no config flag as of Next 16.3 — `experimental.viewTransition`
- * was removed, and the App Router enables React's <ViewTransition> integration by
- * default. It is what carries a painting from the hall into its exhibit page as one
- * object.
+ * Nothing to configure. `experimental.viewTransition` was removed in Next 16.3, and
+ * the app no longer uses React's <ViewTransition> at all — a painting is carried from
+ * the hall into its exhibit page by a framer shared layout animation instead. See
+ * components/Morph.tsx.
  *
- * This version of Next still does not alias `react` to its own vendored build, so the
- * app depends on react/react-dom at `experimental` directly for the ViewTransition
- * export. Both must move together, and pinning react back to a stable release will
- * leave the import resolving to nothing.
+ * That leaves the react/react-dom `experimental` pin in package.json with nothing
+ * depending on it: it was there for the ViewTransition export, which is no longer
+ * imported anywhere. Moving back to a stable React should now be possible, and both
+ * packages have to move together when it happens.
  */
 const nextConfig: NextConfig = {};
 
