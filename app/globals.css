@@ -37,8 +37,8 @@
   --color-frame: var(--frame);
   --color-gold: var(--gold);
   --color-gold-deep: var(--gold-deep);
-  --font-display: var(--font-fraunces);
-  --font-body: var(--font-work-sans);
+  --font-display: var(--font-cinzel);
+  --font-body: var(--font-raleway);
 }
 
 body {

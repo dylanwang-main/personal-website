@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Analytics } from "@vercel/analytics/next";
-import { Fraunces, Work_Sans } from "next/font/google";
+import { Cinzel, Raleway } from "next/font/google";
 import ArrivalCurtain from "@/components/ArrivalCurtain";
 import PageTransition from "@/components/PageTransition";
 import SiteHeader from "@/components/SiteHeader";
@@ -8,13 +8,13 @@ import SiteFooter from "@/components/SiteFooter";
 import { site } from "@/content/content";
 import "./globals.css";
 
-const fraunces = Fraunces({
-  variable: "--font-fraunces",
+const cinzel = Cinzel({
+  variable: "--font-cinzel",
   subsets: ["latin"],
 });
 
-const workSans = Work_Sans({
-  variable: "--font-work-sans",
+const raleway = Raleway({
+  variable: "--font-raleway",
   subsets: ["latin"],
 });
 
@@ -41,7 +41,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${fraunces.variable} ${workSans.variable} h-full antialiased`}
+      className={`${cinzel.variable} ${raleway.variable} h-full antialiased`}
       // The theme init script adds `dark` before hydration, so the class list
       // legitimately differs from the server's.
       suppressHydrationWarning
