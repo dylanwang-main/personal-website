@@ -33,7 +33,7 @@ export default function ExhibitReveal({ exhibit }: { exhibit: Exhibit }) {
   const detail = rest.slice(0, -1);
 
   return (
-    <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-10 px-6 py-16">
+    <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-14 px-6 py-16">
       {/* The frame walked into. First thing on the page because the morph lands
           on it — see ExhibitBanner. */}
       <ExhibitBanner
@@ -41,51 +41,55 @@ export default function ExhibitReveal({ exhibit }: { exhibit: Exhibit }) {
         sizes="(min-width: 768px) 48rem, 100vw"
       />
 
-      <MorphReveal slug={slug} className="flex flex-1 flex-col gap-12">
-        <header className="flex flex-col items-center gap-3 text-center">
-          <h1 className="text-3xl">{name}</h1>
+      <MorphReveal slug={slug} className="flex flex-1 flex-col gap-16">
+        {/* Heading. Left-aligned rather than centered — centred headers read
+            as posters, left-aligned reads as standing in front of a wall label
+            in a museum room. The subtitle sits below at a distinct size. */}
+        <header className="flex flex-col gap-4">
+          <h1 className="text-3xl md:text-4xl">{name}</h1>
           <p className="max-w-xl font-display text-lg text-muted italic">
             {subtitle}
           </p>
           <span
             aria-hidden
-            className="mt-1 h-px w-16"
+            className="mt-1 h-px w-full"
             style={{
               background:
-                "linear-gradient(90deg, transparent, var(--gold-deep), transparent)",
+                "linear-gradient(90deg, var(--frame), transparent 60%)",
             }}
           />
         </header>
 
-        {/* Wall text. Left-aligned: three paragraphs centred would read as a
-            poster rather than as something to stand and read. */}
-        <div className="flex flex-col gap-6">
-          <p className="text-lg leading-relaxed text-ink">{lead}</p>
+        {/* Wall text. The lead paragraph is larger and in ink — the opening
+            statement a visitor reads at a glance. Detail copy is muted. The
+            closing thought is set off by a rule in the display face. */}
+        <div className="flex flex-col gap-8">
+          <p className="text-xl leading-relaxed text-ink">{lead}</p>
 
-          {detail.map((paragraph) => (
-            <p key={paragraph.slice(0, 32)} className="text-muted">
+          {detail.map((paragraph, i) => (
+            <p key={i} className="leading-relaxed text-muted">
               {paragraph}
             </p>
           ))}
 
           {closing && (
-            <p className="border-t border-frame/50 pt-6 font-display text-lg leading-relaxed text-ink italic">
+            <p className="pt-8 font-display text-lg leading-relaxed text-ink italic"
+              style={{
+                borderTop: "1px solid transparent",
+                borderImage:
+                  "linear-gradient(90deg, var(--frame), transparent 60%) 1",
+              }}
+            >
               {closing}
             </p>
           )}
         </div>
 
-        <section className="flex flex-col gap-5">
+        <section className="flex flex-col gap-5 pt-4">
           <h2 className="text-xs tracking-[0.14em] text-muted uppercase">
             {exhibitPage.galleryLabel}
           </h2>
 
-          {/* One row, however many slots the room has. Stretching an odd slot
-              across the full width would blow it up to twice the size of its
-              neighbours, which reads as a feature image rather than a gallery —
-              the featured room is the one that gets a centrepiece. Every slot
-              runs at the same ratio so the wall does not move when photographs
-              replace the empty canvases. */}
           <div
             className={`grid grid-cols-1 gap-6 sm:gap-5 ${
               images.length >= 3 ? "sm:grid-cols-3" : "sm:grid-cols-2"
@@ -102,7 +106,7 @@ export default function ExhibitReveal({ exhibit }: { exhibit: Exhibit }) {
           </div>
         </section>
 
-        <div className="flex justify-center">
+        <div className="flex pt-4">
           <BackToHall
             slug={slug}
             className="rounded border border-frame px-6 py-3 transition hover:scale-105"

@@ -16,7 +16,13 @@ export default function SiteFooter() {
             {footer.links.map((link) => (
               <li key={link.label}>
                 <a
-                  href={link.href}
+                  href={link.href === "#" ? undefined : link.href}
+                  {...(link.href !== "#" && {
+                    target: "_blank",
+                    rel: "noopener noreferrer",
+                  })}
+                  role={link.href === "#" ? "link" : undefined}
+                  aria-disabled={link.href === "#" ? true : undefined}
                   className="transition-colors hover:text-ink"
                 >
                   {link.label}

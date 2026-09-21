@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import { motion } from "framer-motion";
 import { EASE_PUSH, THRESHOLD_DURATION } from "@/lib/motion";
 
@@ -23,6 +24,9 @@ const NOWHERE: Rect = { top: 0, left: 0, width: 0, height: 0 };
  *      settles onto — the next route mounts on that same colour, so the
  *      navigation lands inside the move instead of cutting against it.
  *
+ * Uses transform (translate + scale) rather than animating top/left/width/height
+ * to stay on the compositor and avoid layout thrashing on lower-end devices.
+ *
  * Deliberately always mounted and `initial={false}`: it holds the state it is
  * given and only moves when `active` flips, so nothing animates on mount and
  * Strict Mode — which remounts every newly mounted component in development, and
@@ -38,26 +42,52 @@ export default function ThresholdZoom({
 }) {
   const rect = from ?? NOWHERE;
 
+  // Compute transform values to go from the doorway rect to full viewport
+  // using only compositor-friendly properties (translate + scale).
+  const transforms = useMemo(() => {
+    if (!rect.width || !rect.height) {
+      return { x: 0, y: 0, scaleX: 1, scaleY: 1 };
+    }
+    const vw = typeof window !== "undefined" ? window.innerWidth : 0;
+    const vh = typeof window !== "undefined" ? window.innerHeight : 0;
+    return {
+      x: -rect.left,
+      y: -rect.top,
+      scaleX: vw / rect.width || 1,
+      scaleY: vh / rect.height || 1,
+    };
+  }, [rect.left, rect.top, rect.width, rect.height]);
+
   return (
     <>
       {/* The doorway, opening up into the room beyond */}
       <motion.div
         className="pointer-events-none fixed z-50 overflow-hidden"
-        style={{ background: "linear-gradient(180deg, #100e0a, #05040a)" }}
+        style={{
+          top: rect.top,
+          left: rect.left,
+          width: rect.width,
+          height: rect.height,
+          transformOrigin: "0 0",
+          background: "linear-gradient(180deg, #100e0a, #05040a)",
+        }}
         initial={false}
         animate={active ? "through" : "hidden"}
         variants={{
           hidden: {
-            ...rect,
+            x: 0,
+            y: 0,
+            scaleX: 1,
+            scaleY: 1,
             opacity: 0,
             borderRadius: 6,
             transition: { duration: 0 },
           },
           through: {
-            top: 0,
-            left: 0,
-            width: "100vw",
-            height: "100vh",
+            x: transforms.x,
+            y: transforms.y,
+            scaleX: transforms.scaleX,
+            scaleY: transforms.scaleY,
             opacity: 1,
             borderRadius: 0,
             transition: {

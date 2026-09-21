@@ -154,7 +154,7 @@ export default function Home() {
 
         {/* Support: the bio the entrance used to lead with, now reading as the
             placard wall beside the door rather than as the headline. */}
-        <section className="mx-auto grid w-full max-w-5xl grid-cols-1 gap-10 px-6 pt-4 pb-20 md:grid-cols-[minmax(0,20rem)_minmax(0,1fr)]">
+        <section className="mx-auto grid w-full max-w-5xl grid-cols-1 gap-10 px-6 pt-4 pb-24 md:grid-cols-[minmax(0,20rem)_minmax(0,1fr)] md:gap-14">
           {/* Hung, not inset: a portrait at the scale of the copy beside it,
               rather than a thumbnail the text has to be read around. Capped on
               mobile, where a full-width 4:5 would fill most of the screen. */}
@@ -164,10 +164,10 @@ export default function Home() {
             className="aspect-[4/5] w-full max-w-[18rem] justify-self-center border border-frame md:max-w-none md:justify-self-stretch"
           />
 
-          <div className="flex flex-col gap-6">
-            <div className="flex flex-col gap-3">
-              <h2 className="text-xl">{entrance.heading}</h2>
-              <p className="text-muted">{entrance.body}</p>
+          <div className="flex flex-col gap-8">
+            <div className="flex flex-col gap-4">
+              <h2 className="text-2xl md:text-3xl">{entrance.heading}</h2>
+              <p className="leading-relaxed text-muted">{entrance.body}</p>
             </div>
 
             <p className="text-sm text-muted">
@@ -200,15 +200,15 @@ export default function Home() {
             way past rather than a second call to action competing with the door.
             Copy comes from each exhibit's own `teaser`, so the strip cannot list
             a room the museum does not have. */}
-        <section className="mx-auto flex w-full max-w-5xl flex-col gap-7 px-6 pb-24">
-          <div className="flex flex-col gap-1">
+        <section className="mx-auto flex w-full max-w-5xl flex-col gap-8 px-6 pb-28">
+          <div className="flex flex-col gap-2">
             <h2 className="text-xs tracking-[0.16em] text-muted uppercase">
               {entrance.roomsLabel}
             </h2>
             <p className="text-sm text-muted">{entrance.roomsNote}</p>
           </div>
 
-          <div className="grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-2 lg:grid-cols-5">
+          <div className="grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2 lg:grid-cols-5">
             {exhibits.map((exhibit) => (
               <Placard
                 key={exhibit.slug}

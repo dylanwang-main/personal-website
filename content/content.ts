@@ -47,8 +47,8 @@ export type Exhibit = {
 };
 
 export const site = {
-  title: "Digital Museum",
-  description: "A prototype personal digital museum.",
+  title: "Dylan Wang",
+  description: "A personal museum — projects, content, hobbies, and travels.",
 };
 
 export const entrance = {
@@ -95,18 +95,22 @@ export const entrance = {
 };
 
 /**
- * TEMPORARY / PLACEHOLDER navigation.
- *
- * The header is a stopgap so every page has a shell to sit in. Its links are
- * generated from `exhibits` below, so the five rooms never drift out of sync.
- * Both the structure (a flat bar of five links) and the styling are expected to
- * be revisited once the museum experience is locked in — the intended way in is
- * still the entrance door, not this bar.
+ * Museum navigation. A minimal header with the visitor's name as the home link,
+ * a floor plan button that opens a spatial map of the museum, and a theme
+ * toggle. The floor plan extends the museum metaphor instead of exposing every
+ * room in a flat nav bar.
  */
 export const nav = {
   /** Accessible name for the header landmark */
-  label: "Rooms",
-  homeLabel: "Digital Museum",
+  label: "Museum navigation",
+  homeLabel: "Dylan Wang",
+  /** Floor plan overlay */
+  floorPlanLabel: "Floor Plan",
+  floorPlanClose: "Close",
+  /** Spatial map labels */
+  entranceLabel: "Entrance",
+  hallLabel: "Main Hall",
+  youAreHere: "You are here",
 };
 
 /**
@@ -129,7 +133,8 @@ export const footer = {
 
 export const hall = {
   heading: "Main Hall",
-  exitLabel: "Exit",
+  subtitle: "Choose an exhibit to explore.",
+  exitLabel: "Exit the Museum",
 };
 
 export const exhibitPage = {

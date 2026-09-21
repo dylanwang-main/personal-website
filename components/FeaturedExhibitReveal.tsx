@@ -97,8 +97,8 @@ export default function FeaturedExhibitReveal({
           <div className="flex flex-col gap-6">
             <p className="text-xl leading-relaxed text-ink">{lead}</p>
 
-            {detail.map((paragraph) => (
-              <p key={paragraph.slice(0, 32)} className="text-muted">
+            {detail.map((paragraph, i) => (
+              <p key={i} className="leading-relaxed text-muted">
                 {paragraph}
               </p>
             ))}

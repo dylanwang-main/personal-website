@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { motion, useReducedMotion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Canvas from "@/components/Canvas";
@@ -9,8 +10,14 @@ import CurtainPanels, { CURTAIN_DURATION } from "@/components/CurtainPanels";
 import { beginMorph, frameLayoutId } from "@/components/Morph";
 import { exhibits, hall } from "@/content/content";
 
+/** Stagger delay per painting in the hall unveil. */
+const PAINTING_STAGGER = 0.1;
+/** How long each painting takes to unveil. */
+const PAINTING_UNVEIL = 0.6;
+
 export default function Museum() {
   const router = useRouter();
+  const reduceMotion = useReducedMotion();
   const [exiting, setExiting] = useState(false);
   const navigated = useRef(false);
 
@@ -61,46 +68,88 @@ export default function Museum() {
   }, [exiting]);
 
   return (
-    <main className="relative flex flex-1 flex-col items-center gap-12 px-6 py-10">
-      <h1 className="text-3xl">{hall.heading}</h1>
+    <main className="relative flex flex-1 flex-col items-center px-6 py-10">
+      {/* Hall heading: wider tracking and a tapered rule make this read as
+          architectural lettering — a sign painted on the wall, not a page
+          title. Distinct from exhibit headings (text-3xl, tight tracking). */}
+      <motion.div
+        className="flex flex-col items-center gap-3 pt-4 pb-16 text-center"
+        initial={reduceMotion ? false : { opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: reduceMotion ? 0 : 0.5 }}
+      >
+        <h1
+          className="text-3xl tracking-[0.08em] uppercase md:text-4xl"
+          style={{ letterSpacing: "0.08em" }}
+        >
+          {hall.heading}
+        </h1>
+        <span
+          aria-hidden
+          className="h-px w-12"
+          style={{
+            background:
+              "linear-gradient(90deg, transparent, var(--frame), transparent)",
+          }}
+        />
+        <p className="text-sm text-muted">{hall.subtitle}</p>
+      </motion.div>
 
-      <div className="flex w-full max-w-6xl flex-col gap-10 md:flex-row md:items-start">
-        {exhibits.map((exhibit) => (
-          <Link
+      {/* Paintings hung on the wall. On desktop the featured room is slightly
+          larger — the gold frame earns more wall space. Staggered vertical
+          position (via padding-top on alternating paintings) breaks the flat
+          grid and reads as deliberately hung rather than auto-laid-out. */}
+      {/* Paintings unveiled. Each painting clips from bottom to top with a
+          stagger, as if curtains are being drawn — museum-specific arrival,
+          not a generic fade. Reduced motion skips the clip and shows instantly. */}
+      <div className="flex w-full max-w-6xl flex-col items-center gap-12 md:flex-row md:items-start md:gap-6 lg:gap-8">
+        {exhibits.map((exhibit, i) => (
+          <motion.div
             key={exhibit.slug}
-            href={`/museum/${exhibit.slug}`}
-            onClick={(e) => enterExhibit(exhibit.slug, e)}
-            // Hover lift in CSS rather than framer: a `whileHover` scale and a
-            // layout animation would both be writing this element's transform.
-            className="group flex-1 cursor-pointer text-left transition-transform duration-200 hover:scale-[1.04] motion-reduce:transition-none motion-reduce:hover:scale-100"
+            className={`${exhibit.featured ? "md:flex-[1.15]" : "flex-1"}`}
+            initial={reduceMotion ? false : { clipPath: "inset(100% 0 0 0)", opacity: 0 }}
+            animate={{ clipPath: "inset(0% 0 0 0)", opacity: 1 }}
+            transition={{
+              duration: reduceMotion ? 0 : PAINTING_UNVEIL,
+              delay: reduceMotion ? 0 : 0.15 + i * PAINTING_STAGGER,
+              ease: [0.16, 1, 0.3, 1],
+            }}
           >
-            <OrnateFrame
-              tone={exhibit.featured ? "gold" : "neutral"}
-              layoutId={frameLayoutId(exhibit.slug)}
-              name={exhibit.name}
-              // Width capped on mobile: full-width at 2:3 would be a canvas
-              // taller than the screen. Desktop splits the row five ways, so no
-              // cap there.
-              className="max-w-[220px] md:max-w-none"
+            <Link
+              href={`/museum/${exhibit.slug}`}
+              onClick={(e) => enterExhibit(exhibit.slug, e)}
+              className="group block cursor-pointer text-left transition-transform duration-200 hover:scale-[1.04] motion-reduce:transition-none motion-reduce:hover:scale-100"
             >
-              <Canvas
-                image={exhibit.cover}
-                sizes="(min-width: 768px) 20vw, 220px"
-                className="aspect-[2/3] w-full"
-              />
-            </OrnateFrame>
-          </Link>
+              <OrnateFrame
+                tone={exhibit.featured ? "gold" : "neutral"}
+                layoutId={frameLayoutId(exhibit.slug)}
+                name={exhibit.name}
+                className={`max-w-[220px] md:max-w-none ${
+                  i % 2 !== 0 ? "md:mt-8" : ""
+                }`}
+              >
+                <Canvas
+                  image={exhibit.cover}
+                  sizes="(min-width: 768px) 20vw, 220px"
+                  className="aspect-[2/3] w-full"
+                />
+              </OrnateFrame>
+            </Link>
+          </motion.div>
         ))}
       </div>
 
-      {/* Clear of the fixed header */}
-      <button
-        type="button"
-        onClick={leaveMuseum}
-        className="fixed top-[4.5rem] right-4 z-40 rounded border border-frame bg-panel px-4 py-2 text-sm text-ink"
-      >
-        {hall.exitLabel}
-      </button>
+      {/* Exit: centered below the paintings with generous breathing room. */}
+      <div className="pt-16 pb-4">
+        <button
+          type="button"
+          onClick={leaveMuseum}
+          aria-label="Exit the museum"
+          className="rounded border border-gold px-6 py-3 text-sm text-ink transition hover:scale-105"
+        >
+          {hall.exitLabel}
+        </button>
+      </div>
 
       {/* Curtains sit parted off-screen until the visitor leaves. */}
       <div className="pointer-events-none fixed inset-0 z-50">

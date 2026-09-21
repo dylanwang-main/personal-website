@@ -47,10 +47,64 @@ body {
   font-family: var(--font-body), ui-sans-serif, system-ui, sans-serif;
 }
 
+/* Wall texture. The flat hex reads as "CSS page"; a subtle grain reads as
+   plaster. The SVG noise is inlined so it costs no request and tiles
+   invisibly. Opacity kept low enough that text contrast is unaffected. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0.028;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 256px 256px;
+}
+
+.dark body::before {
+  opacity: 0.04;
+}
+
 h1,
 h2,
 h3 {
   font-family: var(--font-display), ui-serif, serif;
+}
+
+/* Display type: tighter tracking at large sizes so Cinzel reads as carved
+   lettering rather than spaced-out serif. */
+h1 {
+  letter-spacing: -0.02em;
+}
+
+/* Browser surfaces themed from the palette — the cheapest signal that a
+   page was built rather than assembled. */
+::selection {
+  background: color-mix(in srgb, var(--gold) 25%, transparent);
+  color: var(--ink);
+}
+
+::placeholder {
+  color: var(--muted);
+}
+
+/* Scrollbar: thin, quiet, using the frame token. */
+:root {
+  scrollbar-width: thin;
+  scrollbar-color: var(--frame) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--frame);
+  border-radius: 3px;
 }
 
 :focus-visible {

@@ -13,7 +13,15 @@ export default function Placard({
   value: string;
 }) {
   return (
-    <div className="flex flex-col gap-2 border-t border-frame pt-3">
+    <div className="flex flex-col gap-2 pt-3">
+      <span
+        aria-hidden
+        className="-mt-3 mb-1 h-px w-full"
+        style={{
+          background:
+            "linear-gradient(90deg, var(--frame), transparent 80%)",
+        }}
+      />
       <span className="text-[0.65rem] tracking-[0.16em] text-muted uppercase">
         {label}
       </span>
