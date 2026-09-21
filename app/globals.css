@@ -14,7 +14,7 @@
   --panel: #111113;
   --slab: #18181b;
   --ink: #e8e6e1;
-  --muted: #6b6660;
+  --muted: #807a72;
   --frame: #4a4640;
   --gold: #c4a44a;
   --gold-deep: #a08530;
@@ -111,6 +111,21 @@ h1 {
 :focus-visible {
   outline: 2px solid var(--gold-deep);
   outline-offset: 2px;
+}
+
+/* Reduced motion: kill CSS transitions and animations the JS gate does not
+   cover. Framer Motion animations are handled by useReducedMotion in JS;
+   this catches Tailwind transition utilities on hover states, the grain
+   animation, and any future CSS-only motion. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 /* ==========================================================================

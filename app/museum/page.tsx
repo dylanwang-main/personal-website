@@ -139,11 +139,28 @@ export default function Museum() {
                   i % 2 !== 0 ? "md:mt-8" : ""
                 }`}
               >
-                <Canvas
-                  image={exhibit.cover}
-                  sizes="(min-width: 768px) 20vw, 220px"
-                  className="aspect-[2/3] w-full"
-                />
+                <div className="relative">
+                  <Canvas
+                    image={exhibit.cover}
+                    sizes="(min-width: 768px) 20vw, 220px"
+                    className="aspect-[2/3] w-full"
+                  />
+                  {/* Touch affordance: a subtle "Enter" label at the bottom of
+                      each painting. Visible at rest on mobile (no hover), fades
+                      in on hover on desktop. Tells first-time visitors these
+                      frames are doors without breaking the gallery aesthetic. */}
+                  <span
+                    className="absolute inset-x-0 bottom-0 flex items-end justify-center pb-3 font-display text-[0.6rem] tracking-[0.2em] text-ink/0 uppercase opacity-60 transition-colors duration-300 group-hover:text-ink/70 max-md:text-ink/50"
+                    aria-hidden
+                    style={{
+                      background:
+                        "linear-gradient(to top, rgba(0,0,0,0.5), transparent)",
+                      paddingTop: "2rem",
+                    }}
+                  >
+                    Enter
+                  </span>
+                </div>
               </OrnateFrame>
             </Link>
           </motion.div>

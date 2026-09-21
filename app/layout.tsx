@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Analytics } from "@vercel/analytics/next";
 import { Cinzel, Raleway } from "next/font/google";
 import ArrivalCurtain from "@/components/ArrivalCurtain";
@@ -18,9 +18,25 @@ const raleway = Raleway({
   subsets: ["latin"],
 });
 
+export const viewport: Viewport = {
+  themeColor: "#0a0a0b",
+  width: "device-width",
+  initialScale: 1,
+};
+
 export const metadata: Metadata = {
   title: site.title,
   description: site.description,
+  openGraph: {
+    title: site.title,
+    description: site.description,
+    type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title: site.title,
+    description: site.description,
+  },
 };
 
 /* Dark is the default world. Light mode is the alternative — the visitor opts

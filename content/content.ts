@@ -133,26 +133,26 @@ export const nav = {
 };
 
 /**
- * TEMPORARY / PLACEHOLDER footer. Fills out the page shell, not a design focus.
- *
- * `links` are the social profiles, rendered as one group. `contact` is rendered
- * apart from them, hard right — it is the only one that asks for a reply.
- * Every href here is a placeholder awaiting the real handles/address.
+ * Museum credits strip. Rendered at the foot of every page as a quiet plaque —
+ * the kind found near the exit of a real gallery naming the institution and its
+ * hours. Social links and contact live here but read as museum channels, not a
+ * website footer.
  */
 export const footer = {
-  copyright: "© 2026 Dylan Wang. All rights reserved.",
+  credit: "Dylan Wang",
+  note: "Open anytime. No ticket required.",
   links: [
     { label: "LinkedIn", href: "#" },
     { label: "Instagram", href: "#" },
     { label: "TikTok", href: "#" },
     { label: "YouTube", href: "#" },
   ],
-  contact: { label: "Contact", href: "mailto:hello@example.com" },
+  contact: { label: "Say hello", href: "mailto:hello@example.com" },
 };
 
 export const hall = {
   heading: "Main Hall",
-  subtitle: "Choose an exhibit to explore.",
+  subtitle: "Every frame is a door.",
   exitLabel: "Exit the Museum",
 };
 
@@ -178,9 +178,9 @@ export const featuredExhibitPage = {
 };
 
 export const exitScreen = {
-  heading: "Thanks for visiting",
-  body: "That concludes the walkthrough. Come back again whenever you like.",
-  returnLabel: "Return to Entrance",
+  heading: "The door is always open",
+  body: "If something in here made you curious, that was the point. Come find me.",
+  returnLabel: "Walk back in",
 };
 
 /**

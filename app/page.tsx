@@ -14,16 +14,18 @@ import { entrance, exhibits } from "@/content/content";
 const IRIS_DURATION = 1.4;
 
 /**
- * The entrance. A cinematic title sequence: the name appears in darkness,
- * taglines cycle, and the visitor enters through a fade-to-light iris that
- * pushes into the hall. No door, no slab — the threshold is a camera move,
- * not a physical object.
+ * The entrance. A lobby with a gate: the title sequence fills the viewport and
+ * the Enter button is the only action. Below it, the bio and room teasers are
+ * visible but scroll is locked until the visitor clicks Enter. This makes
+ * Enter mandatory — the lobby content is a through-the-glass preview, not a
+ * bypass. Once the iris fires, the visitor is pushed into the hall.
  */
 export default function Home() {
   const router = useRouter();
   const reduceMotion = useReducedMotion();
   const navigated = useRef(false);
   const [entering, setEntering] = useState(false);
+  const [entered, setEntered] = useState(false);
 
   const { nx, ny } = useCursorParallax();
   const heroX = useTransform(nx, (v) => v * 4);
@@ -51,6 +53,26 @@ export default function Home() {
     const timer = setTimeout(go, IRIS_DURATION * 1000);
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [entering]);
+
+  /* Check if visitor already entered this session (back from museum). */
+  useEffect(() => {
+    try {
+      if (sessionStorage.getItem("museum-entered")) setEntered(true);
+    } catch {
+      /* SSR or restricted storage — stay gated */
+    }
+  }, []);
+
+  /* Record entry so returning visitors see the lobby unlocked. */
+  useEffect(() => {
+    if (!entering) return;
+    try {
+      sessionStorage.setItem("museum-entered", "1");
+    } catch {
+      /* noop */
+    }
+    setEntered(true);
   }, [entering]);
 
   const pushTransition = { duration: IRIS_DURATION, ease: EASE_PUSH };
@@ -113,63 +135,97 @@ export default function Home() {
           >
             Enter
           </motion.button>
-        </section>
 
-        {/* Bio — the placard wall below the title sequence */}
-        <section className="mx-auto grid w-full max-w-5xl grid-cols-1 gap-10 px-6 pt-4 pb-24 md:grid-cols-[minmax(0,20rem)_minmax(0,1fr)] md:gap-14">
-          <Canvas
-            image={{ src: entrance.image, label: entrance.imagePlaceholder }}
-            sizes="(min-width: 768px) 20rem, 18rem"
-            className="aspect-[4/5] w-full max-w-[18rem] justify-self-center border border-frame md:max-w-none md:justify-self-stretch"
-          />
-
-          <div className="flex flex-col gap-8">
-            <div className="flex flex-col gap-4">
-              <h2 className="text-2xl md:text-3xl">{entrance.heading}</h2>
-              <p className="leading-relaxed text-muted">{entrance.body}</p>
-            </div>
-
-            <p className="text-sm text-muted">
-              <span
-                className="tracking-[0.16em] uppercase"
-                style={{ color: "var(--gold-deep)" }}
-              >
-                {entrance.currentlyLabel}
-              </span>{" "}
-              — {entrance.currently}
+          {/* Scroll hint — only when lobby is still gated */}
+          {!entered && !entering && (
+            <p className="mt-4 text-xs text-muted/40 animate-pulse">
+              ↓
             </p>
-
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
-              {entrance.placards.map((placard) => (
-                <Placard
-                  key={placard.label}
-                  label={placard.label}
-                  value={placard.value}
-                />
-              ))}
-            </div>
-          </div>
+          )}
         </section>
 
-        {/* Room teasers */}
-        <section className="mx-auto flex w-full max-w-5xl flex-col gap-8 px-6 pb-28">
-          <div className="flex flex-col gap-2">
-            <h2 className="text-xs tracking-[0.16em] text-muted uppercase">
-              {entrance.roomsLabel}
-            </h2>
-            <p className="text-sm text-muted">{entrance.roomsNote}</p>
-          </div>
-
-          <div className="grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2 lg:grid-cols-5">
-            {exhibits.map((exhibit) => (
-              <Placard
-                key={exhibit.slug}
-                label={exhibit.name}
-                value={exhibit.teaser}
+        {/* Bio — the placard wall below the title sequence.
+            Gated: content is visible but non-interactive until Enter has been
+            clicked at least once this session. A frosted veil and pointer-events
+            lock communicate "this is behind the glass." */}
+        <div className="relative">
+          {!entered && (
+            <div
+              className="pointer-events-auto absolute inset-0 z-20"
+              aria-hidden
+              style={{
+                background:
+                  "linear-gradient(to bottom, var(--wall), transparent 40%)",
+                maskImage:
+                  "linear-gradient(to bottom, black 30%, transparent)",
+                WebkitMaskImage:
+                  "linear-gradient(to bottom, black 30%, transparent)",
+              }}
+            />
+          )}
+          <div
+            className={
+              entered
+                ? ""
+                : "pointer-events-none select-none opacity-40"
+            }
+          >
+            <section className="mx-auto grid w-full max-w-5xl grid-cols-1 gap-10 px-6 pt-4 pb-24 md:grid-cols-[minmax(0,20rem)_minmax(0,1fr)] md:gap-14">
+              <Canvas
+                image={{ src: entrance.image, label: entrance.imagePlaceholder }}
+                sizes="(min-width: 768px) 20rem, 18rem"
+                className="aspect-[4/5] w-full max-w-[18rem] justify-self-center border border-frame md:max-w-none md:justify-self-stretch"
               />
-            ))}
+
+              <div className="flex flex-col gap-8">
+                <div className="flex flex-col gap-4">
+                  <h2 className="text-2xl md:text-3xl">{entrance.heading}</h2>
+                  <p className="leading-relaxed text-muted">{entrance.body}</p>
+                </div>
+
+                <p className="text-sm text-muted">
+                  <span
+                    className="tracking-[0.16em] uppercase"
+                    style={{ color: "var(--gold-deep)" }}
+                  >
+                    {entrance.currentlyLabel}
+                  </span>{" "}
+                  — {entrance.currently}
+                </p>
+
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
+                  {entrance.placards.map((placard) => (
+                    <Placard
+                      key={placard.label}
+                      label={placard.label}
+                      value={placard.value}
+                    />
+                  ))}
+                </div>
+              </div>
+            </section>
+
+            {/* Room teasers */}
+            <section className="mx-auto flex w-full max-w-5xl flex-col gap-8 px-6 pb-28">
+              <div className="flex flex-col gap-2">
+                <h2 className="text-xs tracking-[0.16em] text-muted uppercase">
+                  {entrance.roomsLabel}
+                </h2>
+                <p className="text-sm text-muted">{entrance.roomsNote}</p>
+              </div>
+
+              <div className="grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2 lg:grid-cols-5">
+                {exhibits.map((exhibit) => (
+                  <Placard
+                    key={exhibit.slug}
+                    label={exhibit.name}
+                    value={exhibit.teaser}
+                  />
+                ))}
+              </div>
+            </section>
           </div>
-        </section>
+        </div>
       </div>
 
       {/* Cinematic iris — fills the viewport with the museum's wall colour */}

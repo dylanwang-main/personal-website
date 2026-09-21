@@ -25,6 +25,7 @@ export default function FloorPlan({
 }) {
   const pathname = usePathname();
   const closeRef = useRef<HTMLButtonElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
 
   // Focus the close button when the overlay opens.
   useEffect(() => {
@@ -40,6 +41,47 @@ export default function FloorPlan({
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [open, onClose]);
+
+  // Focus trap: loop Tab within the dialog while open.
+  useEffect(() => {
+    if (!open) return;
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key !== "Tab") return;
+      const focusable = dialog!.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      );
+      if (focusable.length === 0) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    }
+
+    dialog.addEventListener("keydown", onKeyDown);
+    return () => dialog.removeEventListener("keydown", onKeyDown);
+  }, [open]);
+
+  // Hide main content from assistive tech while modal is open.
+  useEffect(() => {
+    if (!open) return;
+    const main = document.querySelector("main");
+    const header = document.querySelector("header");
+    const footer = document.querySelector("footer");
+    const targets = [main, header, footer].filter(Boolean) as HTMLElement[];
+    targets.forEach((el) => el.setAttribute("aria-hidden", "true"));
+    return () => {
+      targets.forEach((el) => el.removeAttribute("aria-hidden"));
+    };
+  }, [open]);
 
   function isHere(path: string) {
     return pathname === path;
@@ -66,6 +108,7 @@ export default function FloorPlan({
 
           {/* Floor plan panel */}
           <motion.div
+            ref={dialogRef}
             role="dialog"
             aria-modal="true"
             aria-label={nav.floorPlanLabel}
