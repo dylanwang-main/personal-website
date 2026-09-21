@@ -23,12 +23,14 @@ export const metadata: Metadata = {
   description: site.description,
 };
 
+/* Dark is the default world. Light mode is the alternative — the visitor opts
+   in by toggling, or by having stored "light" previously. The root tokens are
+   already dark, so the class only needs adding for light. */
 const themeInitScript = `
 (function () {
   var stored = localStorage.getItem("theme");
-  var prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-  if (stored === "dark" || (!stored && prefersDark)) {
-    document.documentElement.classList.add("dark");
+  if (stored === "light") {
+    document.documentElement.classList.add("light");
   }
 })();
 `;

@@ -25,8 +25,8 @@ export default function SiteHeader() {
   return (
     <>
       <header
-        className="fixed top-0 right-0 left-0 z-30 h-14 border-b border-frame/40 bg-wall/55 backdrop-blur-xl backdrop-saturate-150"
-        style={{ boxShadow: "inset 0 1px 0 rgba(255,255,255,0.06)" }}
+        className="fixed top-0 right-0 left-0 z-30 h-14 border-b border-frame/20 bg-wall/70 backdrop-blur-xl backdrop-saturate-150"
+        style={{ boxShadow: "inset 0 1px 0 rgba(255,255,255,0.03)" }}
       >
         <div className="mx-auto flex h-full max-w-6xl items-center gap-6 px-6">
           <Link

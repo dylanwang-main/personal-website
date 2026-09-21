@@ -69,7 +69,7 @@ export default function FloorPlan({
             role="dialog"
             aria-modal="true"
             aria-label={nav.floorPlanLabel}
-            className="fixed inset-x-4 top-20 z-50 mx-auto max-w-md rounded-lg border border-frame/60 bg-panel/95 p-6 shadow-2xl backdrop-blur-xl sm:inset-x-auto sm:right-6 sm:left-auto sm:w-80"
+            className="fixed inset-x-4 top-20 z-50 mx-auto max-w-md rounded-lg border border-frame/40 bg-wall/90 p-6 shadow-2xl backdrop-blur-xl sm:inset-x-auto sm:right-6 sm:left-auto sm:w-80"
             initial={{ opacity: 0, y: -12, scale: 0.97 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -8, scale: 0.97 }}

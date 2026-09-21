@@ -43,11 +43,20 @@ export default function GallerySlot({
         <Canvas image={image} sizes={sizes} className={`w-full ${ratio}`} />
       </OrnateFrame>
 
-      <figcaption className="mt-3 flex flex-col gap-1 border-t border-frame/60 pt-2">
+      <figcaption className="mt-3 flex flex-col gap-1 pt-2">
+        <span
+          aria-hidden
+          className="-mt-2 mb-1 h-px w-full"
+          style={{
+            background: overline
+              ? "linear-gradient(90deg, var(--gold-deep), transparent 70%)"
+              : "linear-gradient(90deg, var(--frame), transparent 60%)",
+          }}
+        />
         {overline && (
           <span
             className="text-[0.65rem] tracking-[0.16em] uppercase"
-            style={{ color: "var(--gold-deep)" }}
+            style={{ color: "var(--gold)" }}
           >
             {overline}
           </span>

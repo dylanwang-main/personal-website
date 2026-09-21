@@ -77,7 +77,7 @@ export default function ArrivalCurtain() {
     <motion.div
       // Above the fixed header, which would otherwise sit on top of the veil.
       className="pointer-events-none fixed inset-0 z-[60] flex items-center justify-center"
-      style={{ background: "#0a0908" }}
+      style={{ background: "var(--wall)" }}
       initial={{ opacity: 1 }}
       animate={{ opacity: lifting ? 0 : 1 }}
       transition={{ duration: ARRIVAL_LIFT, ease: EASE_WIPE }}

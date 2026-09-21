@@ -6,31 +6,14 @@ import type { Exhibit } from "@/content/content";
 import { exhibitPage, featuredExhibitPage } from "@/content/content";
 
 /**
- * The featured room. One exhibit carries `featured: true` in content.ts and gets
- * the gold frame in the hall; this is the page behind that frame, so it is laid
- * out as the museum's standout room rather than as the shared template with
- * different words in it.
+ * The featured room — the museum's centrepiece in the dark cinematic vault.
  *
- * The tier has to be legible before the colour is: a visitor who cannot see gold
- * should still land here and know this room is the museum's centrepiece. So
- * every difference below is structural first and gold second.
+ * Structurally distinct from standard rooms: wider (max-w-5xl vs 3xl),
+ * asymmetric heading rail, labelled body sections, hero+supporting gallery
+ * layout. Gold carried through from the hall frame into every accent.
  *
- * - Asymmetric and wider (max-w-5xl vs 3xl). The four standard rooms are a
- *   centred column; this one runs a heading rail against a body column, so it
- *   reads as a different space the moment it loads, before any copy is read.
- * - The wall text is set against labelled rails — `leadLabel` beside the intro —
- *   where the standard rooms run their three beats as a single column.
- * - The gallery leads with one large centrepiece against a supporting column,
- *   instead of the even row the other rooms use. The standard rooms deliberately
- *   avoid a feature image; this room is the feature.
- * - Gold carried through from the hall: the banner's own moulding, which is the
- *   frame that was clicked and flew here, the centrepiece's frame, the eyebrow,
- *   and the rules — so the frame the visitor clicked and the room they land in
- *   are visibly the same exhibit.
- *
- * Route entry is animated once, centrally, by PageTransition. Like the standard
- * layout, this page adds no entry animation of its own beyond MorphReveal
- * holding the copy back until the frame has landed.
+ * On dark walls, the gold rules and eyebrow glow subtly, making this room
+ * unmistakably the featured exhibit before any copy is read.
  */
 export default function FeaturedExhibitReveal({
   exhibit,
@@ -45,28 +28,25 @@ export default function FeaturedExhibitReveal({
 
   return (
     <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-14 px-6 py-16">
-      {/* The frame walked into. First thing on the page because the morph lands
-          on it — see ExhibitBanner. */}
       <ExhibitBanner
         exhibit={exhibit}
         sizes="(min-width: 1024px) 64rem, 100vw"
       />
 
-      <MorphReveal slug={slug} className="flex flex-1 flex-col gap-14">
-        {/* Heading rail. Left-aligned and bottom-aligned against the subtitle:
-            the standard rooms centre all three lines, this one sets them in
-            opposition across the full width. */}
+      <MorphReveal slug={slug} className="flex flex-1 flex-col gap-16">
+        {/* Heading rail — asymmetric, gold-accented */}
         <header className="flex flex-col gap-6">
           <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between md:gap-10">
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-3">
               <span
                 className="text-xs tracking-[0.22em] uppercase"
-                style={{ color: "var(--gold-deep)" }}
+                style={{
+                  color: "var(--gold)",
+                  textShadow: "0 0 20px rgba(196,164,74,0.3)",
+                }}
               >
                 {featuredExhibitPage.eyebrow}
               </span>
-              {/* Larger than the standard exhibit heading (text-3xl), and tight
-                  enough that the extra size reads as weight rather than sprawl. */}
               <h1 className="text-4xl tracking-tight md:text-5xl">{name}</h1>
             </div>
 
@@ -75,26 +55,25 @@ export default function FeaturedExhibitReveal({
             </p>
           </div>
 
-          {/* Full-width rule. The standard rooms get a 4rem centred hairline;
-              this one runs the whole measure and fades out to the right. */}
+          {/* Gold rule — glows subtly on dark */}
           <span
             aria-hidden
             className="h-px w-full"
             style={{
               background:
-                "linear-gradient(90deg, var(--gold-deep), var(--gold-deep) 35%, transparent)",
+                "linear-gradient(90deg, var(--gold), var(--gold-deep) 40%, transparent 80%)",
+              boxShadow: "0 0 8px rgba(196,164,74,0.15)",
             }}
           />
         </header>
 
-        {/* Lead paragraph pulled out at full size against a labelled rail, with
-            the remaining copy set narrower beside it. */}
+        {/* Lead paragraph against a labelled rail */}
         <div className="flex flex-col gap-8 md:flex-row md:gap-12">
           <h2 className="shrink-0 text-xs tracking-[0.14em] text-muted uppercase md:w-32 md:pt-3">
             {featuredExhibitPage.leadLabel}
           </h2>
 
-          <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-8">
             <p className="text-xl leading-relaxed text-ink">{lead}</p>
 
             {detail.map((paragraph, i) => (
@@ -104,21 +83,34 @@ export default function FeaturedExhibitReveal({
             ))}
 
             {closing && (
-              <p
-                className="pt-6 font-display text-lg leading-relaxed text-ink italic"
-                style={{ borderTop: "1px solid var(--gold-deep)" }}
-              >
-                {closing}
-              </p>
+              <>
+                <span
+                  aria-hidden
+                  className="h-px w-2/3"
+                  style={{
+                    background:
+                      "linear-gradient(90deg, var(--gold), transparent 60%)",
+                    boxShadow: "0 0 6px rgba(196,164,74,0.1)",
+                  }}
+                />
+                <p className="font-display text-lg leading-relaxed text-ink italic">
+                  {closing}
+                </p>
+              </>
             )}
           </div>
         </div>
 
-        {/* Centrepiece plus a supporting column, rather than the even row the
-            other rooms use. Both sides run at fixed ratios — 3:2 for the
-            centrepiece, 4:3 for the supporting slots — so the wall holds its
-            shape when photographs replace the empty canvases. */}
-        <section className="flex flex-col gap-5">
+        {/* Gallery — hero centrepiece + supporting column */}
+        <section className="relative flex flex-col gap-6">
+          <div
+            aria-hidden
+            className="pointer-events-none absolute -top-8 left-1/2 -z-10 h-32 w-[140%] -translate-x-1/2"
+            style={{
+              background:
+                "radial-gradient(50% 60% at 50% 0%, rgba(196,164,74,0.04), transparent 70%)",
+            }}
+          />
           <h2 className="text-xs tracking-[0.14em] text-muted uppercase">
             {exhibitPage.galleryLabel}
           </h2>
@@ -147,12 +139,11 @@ export default function FeaturedExhibitReveal({
           </div>
         </section>
 
-        {/* Left-aligned, unlike the centred button in the standard rooms. */}
+        {/* Back — gold accent */}
         <div className="flex">
           <BackToHall
             slug={slug}
-            className="rounded px-6 py-3 transition hover:scale-105"
-            style={{ boxShadow: "0 0 0 1px var(--gold-deep)" }}
+            className="rounded border border-gold/40 px-6 py-3 text-sm text-gold transition hover:border-gold hover:shadow-[0_0_16px_-4px_rgba(196,164,74,0.25)]"
           >
             {exhibitPage.backLabel}
           </BackToHall>

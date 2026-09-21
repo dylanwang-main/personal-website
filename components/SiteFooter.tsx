@@ -6,7 +6,7 @@ import { footer } from "@/content/content";
  */
 export default function SiteFooter() {
   return (
-    <footer className="border-t border-frame/40 px-6 py-6">
+    <footer className="border-t border-frame/20 px-6 py-6">
       <div className="mx-auto flex max-w-6xl flex-col items-center gap-3 text-xs text-muted sm:flex-row sm:justify-between">
         <p>{footer.copyright}</p>
 

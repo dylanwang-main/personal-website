@@ -106,7 +106,7 @@ export default function Museum() {
         {exhibits.map((exhibit, i) => (
           <motion.div
             key={exhibit.slug}
-            className={`${exhibit.featured ? "md:flex-[1.15]" : "flex-1"}`}
+            className={`relative ${exhibit.featured ? "md:flex-[1.15]" : "flex-1"}`}
             initial={reduceMotion ? false : { clipPath: "inset(100% 0 0 0)", opacity: 0 }}
             animate={{ clipPath: "inset(0% 0 0 0)", opacity: 1 }}
             transition={{
@@ -115,6 +115,17 @@ export default function Museum() {
               ease: [0.16, 1, 0.3, 1],
             }}
           >
+            {/* Directional spotlight — a cone of light falling from above
+                each painting. Gold-tinted for the featured frame. */}
+            <div
+              aria-hidden
+              className="pointer-events-none absolute -top-16 left-1/2 -z-10 h-48 w-[120%] -translate-x-1/2"
+              style={{
+                background: exhibit.featured
+                  ? "radial-gradient(50% 70% at 50% 0%, rgba(196,164,74,0.12), transparent 70%)"
+                  : "radial-gradient(50% 70% at 50% 0%, rgba(255,255,255,0.05), transparent 70%)",
+              }}
+            />
             <Link
               href={`/museum/${exhibit.slug}`}
               onClick={(e) => enterExhibit(exhibit.slug, e)}

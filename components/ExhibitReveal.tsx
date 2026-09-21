@@ -6,25 +6,15 @@ import type { Exhibit } from "@/content/content";
 import { exhibitPage } from "@/content/content";
 
 /**
- * An exhibit room: the room's artwork, heading, hook, wall text, and its own
- * small gallery.
+ * A standard exhibit room in the dark cinematic vault.
  *
- * Everything rendered here comes from the exhibit's entry in content.ts, and no
- * field is optional — all five rooms have the same shape, so the layout is
- * proven out rather than tuned to whichever room happens to have the most copy.
+ * The frame lands as the banner, then the room reveals: heading left-aligned
+ * like a wall label, lead paragraph at reading size, detail muted, closing
+ * thought pulled out in display italic below a tapered gold rule. The gallery
+ * sits in its own section with a spotlight treatment.
  *
- * The three paragraphs are set as three beats rather than as a block, because
- * every room is written to the same shape and the shape is worth showing: the
- * intro is the largest text on the page after the heading, the detail is body
- * copy at reading weight, and the closing thought is pulled out below a rule in
- * the display face. A visitor who reads only the first and last lines still gets
- * the room. Written to survive a room with more or fewer paragraphs than three:
- * whatever sits between the first and the last is set as detail.
- *
- * Route entry is animated once, centrally, by PageTransition, and the one route
- * change it stands down for — walking in from the hall — is covered by the frame
- * flying into the banner. This page adds no entry animation of its own; the only
- * timing it owns is MorphReveal holding the copy back until that flight lands.
+ * Everything below the banner is held back by MorphReveal until the frame
+ * has finished flying into place.
  */
 export default function ExhibitReveal({ exhibit }: { exhibit: Exhibit }) {
   const { slug, name, subtitle, paragraphs, images } = exhibit;
@@ -34,36 +24,30 @@ export default function ExhibitReveal({ exhibit }: { exhibit: Exhibit }) {
 
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-14 px-6 py-16">
-      {/* The frame walked into. First thing on the page because the morph lands
-          on it — see ExhibitBanner. */}
       <ExhibitBanner
         exhibit={exhibit}
         sizes="(min-width: 768px) 48rem, 100vw"
       />
 
-      <MorphReveal slug={slug} className="flex flex-1 flex-col gap-16">
-        {/* Heading. Left-aligned rather than centered — centred headers read
-            as posters, left-aligned reads as standing in front of a wall label
-            in a museum room. The subtitle sits below at a distinct size. */}
-        <header className="flex flex-col gap-4">
+      <MorphReveal slug={slug} className="flex flex-1 flex-col gap-20">
+        {/* Room heading — left-aligned wall label treatment */}
+        <header className="flex flex-col gap-5">
           <h1 className="text-3xl md:text-4xl">{name}</h1>
           <p className="max-w-xl font-display text-lg text-muted italic">
             {subtitle}
           </p>
           <span
             aria-hidden
-            className="mt-1 h-px w-full"
+            className="h-px w-full"
             style={{
               background:
-                "linear-gradient(90deg, var(--frame), transparent 60%)",
+                "linear-gradient(90deg, var(--gold-deep), transparent 50%)",
             }}
           />
         </header>
 
-        {/* Wall text. The lead paragraph is larger and in ink — the opening
-            statement a visitor reads at a glance. Detail copy is muted. The
-            closing thought is set off by a rule in the display face. */}
-        <div className="flex flex-col gap-8">
+        {/* Wall text */}
+        <div className="flex flex-col gap-10">
           <p className="text-xl leading-relaxed text-ink">{lead}</p>
 
           {detail.map((paragraph, i) => (
@@ -73,19 +57,33 @@ export default function ExhibitReveal({ exhibit }: { exhibit: Exhibit }) {
           ))}
 
           {closing && (
-            <p className="pt-8 font-display text-lg leading-relaxed text-ink italic"
-              style={{
-                borderTop: "1px solid transparent",
-                borderImage:
-                  "linear-gradient(90deg, var(--frame), transparent 60%) 1",
-              }}
-            >
-              {closing}
-            </p>
+            <>
+              <span
+                aria-hidden
+                className="h-px w-2/3"
+                style={{
+                  background:
+                    "linear-gradient(90deg, var(--gold-deep), transparent 70%)",
+                }}
+              />
+              <p className="font-display text-lg leading-relaxed text-ink italic">
+                {closing}
+              </p>
+            </>
           )}
         </div>
 
-        <section className="flex flex-col gap-5 pt-4">
+        {/* Gallery — spotlit section */}
+        <section className="relative flex flex-col gap-6 pt-8">
+          {/* Subtle overhead glow on the gallery */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute -top-8 left-1/2 -z-10 h-32 w-[140%] -translate-x-1/2"
+            style={{
+              background:
+                "radial-gradient(50% 60% at 50% 0%, rgba(255,255,255,0.03), transparent 70%)",
+            }}
+          />
           <h2 className="text-xs tracking-[0.14em] text-muted uppercase">
             {exhibitPage.galleryLabel}
           </h2>
@@ -106,10 +104,11 @@ export default function ExhibitReveal({ exhibit }: { exhibit: Exhibit }) {
           </div>
         </section>
 
+        {/* Back — gold accent to be visible on dark */}
         <div className="flex pt-4">
           <BackToHall
             slug={slug}
-            className="rounded border border-frame px-6 py-3 transition hover:scale-105"
+            className="rounded border border-gold/40 px-6 py-3 text-sm text-gold transition hover:border-gold hover:shadow-[0_0_16px_-4px_rgba(196,164,74,0.25)]"
           >
             {exhibitPage.backLabel}
           </BackToHall>

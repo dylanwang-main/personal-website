@@ -14,6 +14,23 @@ export type ExhibitImage = {
   label: string;
 };
 
+/**
+ * Room layout variants. Each room gets a unique spatial arrangement
+ * so the museum feels like five distinct spaces, not one template.
+ *
+ *   portfolio  — work-first: images large at the top, text below
+ *   workshop   — raw asymmetric: images woven into the text flow
+ *   featured   — the gold room: asymmetric heading rail, hero centrepiece
+ *   collection — horizontal interleave: image-text pairs side by side
+ *   journey    — cinematic: full-width images, text as captions beneath
+ */
+export type ExhibitLayout =
+  | "portfolio"
+  | "workshop"
+  | "featured"
+  | "collection"
+  | "journey";
+
 export type Exhibit = {
   /** URL segment: /museum/<slug> */
   slug: string;
@@ -44,6 +61,8 @@ export type Exhibit = {
   images: ExhibitImage[];
   /** Exactly one exhibit should be featured (gets the gold frame) */
   featured?: boolean;
+  /** Room layout variant. Each room is a distinct spatial experience. */
+  layout: ExhibitLayout;
 };
 
 export const site = {
@@ -90,7 +109,7 @@ export const entrance = {
    */
   roomsLabel: "Behind the door",
   roomsNote: "Five rooms. The door is the only way in.",
-  /** Accessible name for the door, which is the only way in */
+  /** Accessible name for the enter button */
   doorLabel: "Enter the museum",
 };
 
@@ -175,6 +194,7 @@ export const exitScreen = {
 export const exhibits: Exhibit[] = [
   {
     slug: "projects",
+    layout: "portfolio",
     name: "Projects",
     subtitle: "Placeholder hook — things taken from idea to finished.",
     teaser: "Finished things, and what they cost.",
@@ -192,6 +212,7 @@ export const exhibits: Exhibit[] = [
   },
   {
     slug: "currently-building",
+    layout: "workshop",
     name: "Currently Building",
     subtitle: "Placeholder hook — the wet paint room.",
     teaser: "Wet paint. Unfinished on purpose.",
@@ -208,6 +229,7 @@ export const exhibits: Exhibit[] = [
   },
   {
     slug: "content-creation",
+    layout: "featured",
     name: "Content Creation",
     subtitle:
       "Placeholder hook — the featured wall: writing, video, everything published.",
@@ -227,6 +249,7 @@ export const exhibits: Exhibit[] = [
   },
   {
     slug: "hobbies",
+    layout: "collection",
     name: "Hobbies",
     subtitle: "Placeholder hook — what the hours outside work go to.",
     teaser: "Hours spent with nothing riding on them.",
@@ -243,6 +266,7 @@ export const exhibits: Exhibit[] = [
   },
   {
     slug: "travels",
+    layout: "journey",
     name: "Travels",
     subtitle: "Placeholder hook — places visited, and what came back with me.",
     teaser: "Places gone, and what came back.",

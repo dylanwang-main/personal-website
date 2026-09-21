@@ -100,8 +100,8 @@ export default function OrnateFrame({
         className={`relative w-full p-px transition-shadow duration-300 ${className}`}
         style={{
           boxShadow: isGold
-            ? "0 0 0 1px var(--gold-deep), 0 16px 30px -18px rgba(0,0,0,0.6)"
-            : "0 0 0 1px var(--frame), 0 14px 26px -18px rgba(0,0,0,0.5)",
+            ? "0 0 0 1px var(--gold-deep), 0 16px 30px -12px rgba(0,0,0,0.8), 0 0 40px -10px rgba(196,164,74,0.15)"
+            : "0 0 0 1px var(--frame), 0 14px 26px -12px rgba(0,0,0,0.7)",
         }}
       >
         {/* Moulding: base metal under a sheen that falls away from the light. */}
@@ -116,10 +116,10 @@ export default function OrnateFrame({
             // pale one in the other; mixing towards black instead keeps one
             // material — pewter, and gilt — under both.
             backgroundImage: isGold
-              ? "linear-gradient(135deg, rgba(255,255,255,0.45), rgba(255,255,255,0) 26%), linear-gradient(135deg, var(--gold), var(--gold-deep))"
-              : "linear-gradient(135deg, rgba(255,255,255,0.3), rgba(255,255,255,0) 24%), linear-gradient(135deg, var(--frame), color-mix(in srgb, var(--frame) 45%, #000))",
+              ? "linear-gradient(135deg, rgba(255,255,255,0.35), rgba(255,255,255,0) 26%), linear-gradient(135deg, var(--gold), var(--gold-deep))"
+              : "linear-gradient(135deg, rgba(255,255,255,0.18), rgba(255,255,255,0) 24%), linear-gradient(135deg, #3a3835, #222019)",
             boxShadow:
-              "inset 0 1px 0 rgba(255,255,255,0.35), inset 0 -1px 0 rgba(0,0,0,0.4)",
+              "inset 0 1px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.5)",
           }}
         >
           {cut.studs &&
@@ -134,7 +134,7 @@ export default function OrnateFrame({
                 <span
                   className="block h-full w-full rotate-45"
                   style={{
-                    background: isGold ? "#fff6da" : "rgba(255,255,255,0.45)",
+                    background: isGold ? "#e8d5a0" : "rgba(255,255,255,0.25)",
                     boxShadow: "0 1px 1px rgba(0,0,0,0.45)",
                   }}
                 />
@@ -150,7 +150,7 @@ export default function OrnateFrame({
             style={{
               // Fixed dark rather than a token: a recess is a shadow, and a
               // shadow does not get lighter because the room did.
-              background: isGold ? "var(--gold-deep)" : "rgba(18,16,14,0.92)",
+              background: isGold ? "var(--gold-deep)" : "rgba(10,10,11,0.95)",
               boxShadow:
                 "inset 0 2px 6px rgba(0,0,0,0.55), inset 0 -1px 0 rgba(255,255,255,0.12)",
             }}
@@ -161,7 +161,7 @@ export default function OrnateFrame({
               transition={transition}
               className="relative w-full p-px"
               style={{
-                background: isGold ? "#f7e6b4" : "rgba(255,255,255,0.42)",
+                background: isGold ? "#c4a44a" : "rgba(255,255,255,0.18)",
               }}
             >
               {children}
