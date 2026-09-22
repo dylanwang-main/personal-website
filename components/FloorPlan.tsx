@@ -247,11 +247,11 @@ function FloorPlanLink({
           : "text-muted hover:bg-wall/60 hover:text-ink"
       }`}
     >
-      {/* Location dot */}
+      {/* Location dot — pulses gently when it marks the current room */}
       <span
         className={`inline-block h-1.5 w-1.5 shrink-0 rounded-full ${
           here
-            ? "bg-gold"
+            ? "bg-gold animate-[dot-breathe_2.4s_ease-in-out_infinite]"
             : featured
               ? "bg-gold/40"
               : "bg-frame/50"

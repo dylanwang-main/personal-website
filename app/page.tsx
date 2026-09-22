@@ -1,17 +1,20 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion, useTransform } from "framer-motion";
 import { useRouter } from "next/navigation";
 import Canvas from "@/components/Canvas";
 import KineticTagline from "@/components/KineticTagline";
 import Placard from "@/components/Placard";
 import { useCursorParallax } from "@/lib/useCursorParallax";
-import { EASE_PUSH } from "@/lib/motion";
 import { entrance, exhibits } from "@/content/content";
 
-/** Cinematic iris duration — the push into the museum. */
-const IRIS_DURATION = 1.4;
+/**
+ * Ink dissolve duration — the white text of the name warps into organic
+ * tendrils via SVG displacement, disperses outward, and fades to nothing.
+ * The letterforms themselves are the ink.
+ */
+const INK_DURATION = 1.35;
 
 /**
  * The entrance. A lobby with a gate: the title sequence fills the viewport and
@@ -50,7 +53,8 @@ export default function Home() {
 
   useEffect(() => {
     if (!entering) return;
-    const timer = setTimeout(go, IRIS_DURATION * 1000);
+    // Navigate slightly after the ink has fully covered — hold the black.
+    const timer = setTimeout(go, (INK_DURATION + 0.15) * 1000);
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [entering]);
@@ -75,14 +79,74 @@ export default function Home() {
     setEntered(true);
   }, [entering]);
 
-  const pushTransition = { duration: IRIS_DURATION, ease: EASE_PUSH };
+  /**
+   * Animate the SVG displacement filter via rAF — direct DOM mutation avoids
+   * React re-renders on every frame. The displacement scale ramps from 0 to
+   * peak, warping the text into organic tendrils before it fades.
+   */
+  const displaceRef = useRef<SVGFEDisplacementMapElement>(null);
+
+  const runDissolve = useCallback(() => {
+    const el = displaceRef.current;
+    if (!el) return;
+    const start = performance.now();
+    const dur = INK_DURATION * 1000;
+    let raf: number;
+    function frame(now: number) {
+      const t = Math.min((now - start) / dur, 1);
+      // Cubic ease-in: text quivers, then accelerates into dissolution
+      const eased = t * t * t;
+      el!.setAttribute("scale", String(eased * 90));
+      if (t < 1) raf = requestAnimationFrame(frame);
+    }
+    raf = requestAnimationFrame(frame);
+    return () => cancelAnimationFrame(raf);
+  }, []);
+
+  useEffect(() => {
+    if (!entering) return;
+    return runDissolve();
+  }, [entering, runDissolve]);
 
   return (
     <main className="relative flex flex-1 flex-col overflow-hidden">
-      {/* Ambient: subtle warm light pools on dark, drifting */}
-      <div
+      {/* SVG filter definition — referenced by the h1 via CSS filter.
+          feTurbulence generates fractal noise; feDisplacementMap uses it to
+          push the text's pixels along the noise contours. At low scale the
+          text quivers; at high scale the letterforms stretch into wispy,
+          organic tendrils that look like ink dispersing on water. */}
+      <svg className="absolute h-0 w-0" aria-hidden>
+        <defs>
+          <filter
+            id="ink-dissolve"
+            x="-100%"
+            y="-100%"
+            width="400%"
+            height="400%"
+          >
+            <feTurbulence
+              type="fractalNoise"
+              baseFrequency="0.012 0.018"
+              numOctaves="4"
+              seed="5"
+            />
+            <feDisplacementMap
+              ref={displaceRef}
+              in="SourceGraphic"
+              scale="0"
+              xChannelSelector="R"
+              yChannelSelector="G"
+            />
+          </filter>
+        </defs>
+      </svg>
+
+      {/* Ambient: subtle warm light pools on dark, drifting. */}
+      <motion.div
         aria-hidden
         className="pointer-events-none absolute inset-0 z-0"
+        animate={entering ? { opacity: 0 } : { opacity: 1 }}
+        transition={entering ? { duration: 0.6, ease: "easeIn" } : { duration: 0 }}
       >
         <div
           className="absolute inset-0"
@@ -91,7 +155,7 @@ export default function Home() {
               "radial-gradient(50% 40% at 50% 40%, rgba(196,164,74,0.06), transparent 70%)",
           }}
         />
-      </div>
+      </motion.div>
 
       <div className="relative z-10 flex flex-1 flex-col">
         {/* Title sequence. Full viewport. The name is the only thing. */}
@@ -99,76 +163,120 @@ export default function Home() {
           className="flex min-h-[calc(100svh-8rem)] flex-col items-center justify-center px-6"
           style={{ gap: "clamp(24px, 5vh, 56px)" }}
         >
+          {/* Name: on enter, the SVG displacement filter warps the letterforms
+              into organic tendrils while the text scales up slightly and fades.
+              The tendrils are visible for about a second before dissolving —
+              the name IS the ink. */}
           <motion.div
             className="flex flex-col items-center"
             style={{ x: heroX, y: heroY, gap: "clamp(12px, 2vh, 20px)" }}
-            animate={
-              entering
-                ? { scale: 1.06, opacity: 0 }
-                : { scale: 1, opacity: 1 }
-            }
-            transition={entering ? pushTransition : { duration: 0.2 }}
           >
-            <h1
+            <motion.h1
               className="text-center font-display leading-[0.9] tracking-tight"
-              style={{ fontSize: "clamp(2.8rem, 10vw, 7.5rem)" }}
+              style={{
+                fontSize: "clamp(2.8rem, 10vw, 7.5rem)",
+                filter: entering ? "url(#ink-dissolve)" : "none",
+                willChange: entering ? "filter, transform, opacity" : "auto",
+              }}
+              animate={
+                entering
+                  ? { scale: 1.6, opacity: 0 }
+                  : { scale: 1, opacity: 1 }
+              }
+              transition={
+                entering
+                  ? {
+                      scale: { duration: INK_DURATION, ease: [0.3, 0, 0.2, 1] },
+                      opacity: {
+                        duration: INK_DURATION * 0.35,
+                        delay: INK_DURATION * 0.55,
+                        ease: "easeIn",
+                      },
+                    }
+                  : { duration: 0.2 }
+              }
             >
               {entrance.name}
-            </h1>
+            </motion.h1>
 
-            <KineticTagline phrases={entrance.taglines} />
+            {/* Tagline drops away fast — it's not part of the ink moment. */}
+            <motion.div
+              animate={entering ? { opacity: 0, y: 10 } : { opacity: 1, y: 0 }}
+              transition={entering ? { duration: 0.25, ease: "easeIn" } : { duration: 0.2 }}
+            >
+              <KineticTagline phrases={entrance.taglines} />
+            </motion.div>
           </motion.div>
 
-          {/* Enter — the only action. Minimal, gold-accented. */}
+          {/* Enter — the only action. Minimal, gold-accented. A breathing
+              box-shadow glow beckons on idle; hover sharpens the glow. */}
           <motion.button
             type="button"
             onClick={enterMuseum}
             disabled={entering}
             aria-label={entrance.doorLabel}
-            className="rounded border border-gold/50 px-8 py-3 font-display text-sm tracking-[0.14em] text-gold uppercase transition hover:border-gold hover:shadow-[0_0_20px_-4px_rgba(196,164,74,0.3)]"
+            className="rounded border border-gold/50 px-8 py-3 font-display text-sm tracking-[0.14em] text-gold uppercase animate-[enter-glow_3.6s_ease-in-out_infinite] transition-[border-color] hover:border-gold hover:animate-none hover:shadow-[0_0_24px_-4px_rgba(196,164,74,0.35)]"
             animate={
-              entering ? { opacity: 0, y: 10 } : { opacity: 1, y: 0 }
+              entering ? { opacity: 0, y: 8 } : { opacity: 1, y: 0 }
             }
             transition={
-              entering ? { duration: 0.3, ease: "easeIn" } : { duration: 0.2 }
+              entering ? { duration: 0.2, ease: "easeIn" } : { duration: 0.2 }
             }
           >
             Enter
           </motion.button>
 
-          {/* Scroll hint — only when lobby is still gated */}
+          {/* Scroll hint — only when lobby is still gated. A slow vertical
+              bob rather than a pulse: the arrow is beckoning, not blinking. */}
           {!entered && !entering && (
-            <p className="mt-4 text-xs text-muted/40 animate-pulse">
+            <motion.p
+              className="mt-4 text-xs text-muted/40"
+              initial={{ y: 0, opacity: 0 }}
+              animate={{ y: [0, 6, 0], opacity: [0.4, 0.7, 0.4] }}
+              transition={{
+                duration: 2.4,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+            >
               ↓
-            </p>
+            </motion.p>
           )}
         </section>
 
         {/* Bio — the placard wall below the title sequence.
             Gated: content is visible but non-interactive until Enter has been
             clicked at least once this session. A frosted veil and pointer-events
-            lock communicate "this is behind the glass." */}
-        <div className="relative">
-          {!entered && (
-            <div
-              className="pointer-events-auto absolute inset-0 z-20"
-              aria-hidden
-              style={{
-                background:
-                  "linear-gradient(to bottom, var(--wall), transparent 40%)",
-                maskImage:
-                  "linear-gradient(to bottom, black 30%, transparent)",
-                WebkitMaskImage:
-                  "linear-gradient(to bottom, black 30%, transparent)",
-              }}
-            />
-          )}
+            lock communicate "this is behind the glass." The veil lifts with a
+            CSS transition so the unlock reads as the glass being removed rather
+            than a boolean flip.
+
+            On enter, fades quietly — the ink overlay is what covers it. */}
+        <motion.div
+          className="relative"
+          animate={entering ? { opacity: 0 } : { opacity: 1 }}
+          transition={entering ? { duration: 0.4, ease: "easeIn" } : { duration: 0 }}
+        >
           <div
-            className={
+            className={`pointer-events-auto absolute inset-0 z-20 transition-opacity duration-700 ease-out ${
+              entered ? "pointer-events-none opacity-0" : "opacity-100"
+            }`}
+            aria-hidden
+            style={{
+              background:
+                "linear-gradient(to bottom, var(--wall), transparent 40%)",
+              maskImage:
+                "linear-gradient(to bottom, black 30%, transparent)",
+              WebkitMaskImage:
+                "linear-gradient(to bottom, black 30%, transparent)",
+            }}
+          />
+          <div
+            className={`transition-opacity duration-700 ease-out ${
               entered
-                ? ""
+                ? "opacity-100"
                 : "pointer-events-none select-none opacity-40"
-            }
+            }`}
           >
             <section className="mx-auto grid w-full max-w-5xl grid-cols-1 gap-10 px-6 pt-4 pb-24 md:grid-cols-[minmax(0,20rem)_minmax(0,1fr)] md:gap-14">
               <Canvas
@@ -225,17 +333,17 @@ export default function Home() {
               </div>
             </section>
           </div>
-        </div>
+        </motion.div>
       </div>
 
-      {/* Cinematic iris — fills the viewport with the museum's wall colour */}
+      {/* After the name has dissolved, hold darkness for the navigate. */}
       <motion.div
         className="pointer-events-none fixed inset-0 z-50 bg-wall"
         initial={false}
-        animate={{ opacity: entering ? [0, 0, 1] : 0 }}
+        animate={{ opacity: entering ? 1 : 0 }}
         transition={
           entering
-            ? { duration: IRIS_DURATION, times: [0, 0.5, 1], ease: "easeIn" }
+            ? { duration: 0.4, delay: INK_DURATION * 0.7, ease: "easeIn" }
             : { duration: 0 }
         }
       />

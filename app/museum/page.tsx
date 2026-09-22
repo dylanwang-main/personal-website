@@ -1,7 +1,13 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import {
+  motion,
+  useMotionValue,
+  useReducedMotion,
+  useSpring,
+  useTransform,
+} from "framer-motion";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Canvas from "@/components/Canvas";
@@ -10,10 +16,59 @@ import CurtainPanels, { CURTAIN_DURATION } from "@/components/CurtainPanels";
 import { beginMorph, frameLayoutId } from "@/components/Morph";
 import { exhibits, hall } from "@/content/content";
 
+/**
+ * Cursor-reactive 3D tilt + depth push. The painting tilts toward the pointer
+ * and lifts off the wall, as if being picked up to look at. Springs make the
+ * motion feel physical — the frame has weight.
+ *
+ * Disabled under reduced motion and on coarse pointers (touch has no hover
+ * position to track, so the tilt would only fire on tap and read as a glitch).
+ */
+function PaintingTilt({ children }: { children: React.ReactNode }) {
+  const reduceMotion = useReducedMotion();
+  const mx = useMotionValue(0);
+  const my = useMotionValue(0);
+  const z = useMotionValue(0);
+
+  const spring = { stiffness: 260, damping: 25 };
+  const rotateY = useSpring(useTransform(mx, [-0.5, 0.5], [-10, 10]), spring);
+  const rotateX = useSpring(useTransform(my, [-0.5, 0.5], [8, -8]), spring);
+  const springZ = useSpring(z, spring);
+
+  function onMove(e: React.MouseEvent) {
+    if (reduceMotion) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    mx.set((e.clientX - rect.left) / rect.width - 0.5);
+    my.set((e.clientY - rect.top) / rect.height - 0.5);
+    z.set(24);
+  }
+
+  function onLeave() {
+    mx.set(0);
+    my.set(0);
+    z.set(0);
+  }
+
+  return (
+    <motion.div
+      onMouseMove={onMove}
+      onMouseLeave={onLeave}
+      style={{
+        rotateX,
+        rotateY,
+        z: springZ,
+        transformStyle: "preserve-3d",
+      }}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
 /** Stagger delay per painting in the hall unveil. */
 const PAINTING_STAGGER = 0.1;
-/** How long each painting takes to unveil. */
-const PAINTING_UNVEIL = 0.6;
+/** How long each painting takes to emerge from the wall. */
+const PAINTING_UNVEIL = 0.75;
 
 export default function Museum() {
   const router = useRouter();
@@ -71,12 +126,15 @@ export default function Museum() {
     <main className="relative flex flex-1 flex-col items-center px-6 py-10">
       {/* Hall heading: wider tracking and a tapered rule make this read as
           architectural lettering — a sign painted on the wall, not a page
-          title. Distinct from exhibit headings (text-3xl, tight tracking). */}
+          title. Clips from centre outward like text being etched into stone. */}
       <motion.div
         className="flex flex-col items-center gap-3 pt-4 pb-16 text-center"
-        initial={reduceMotion ? false : { opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: reduceMotion ? 0 : 0.5 }}
+        initial={reduceMotion ? false : { opacity: 0, clipPath: "inset(0 50% 0 50%)" }}
+        animate={{ opacity: 1, clipPath: "inset(0 0% 0 0%)" }}
+        transition={{
+          duration: reduceMotion ? 0 : 0.7,
+          ease: [0.16, 1, 0.3, 1],
+        }}
       >
         <h1
           className="text-3xl tracking-[0.08em] uppercase md:text-4xl"
@@ -95,41 +153,47 @@ export default function Museum() {
         <p className="text-sm text-muted">{hall.subtitle}</p>
       </motion.div>
 
-      {/* Paintings hung on the wall. On desktop the featured room is slightly
-          larger — the gold frame earns more wall space. Staggered vertical
-          position (via padding-top on alternating paintings) breaks the flat
-          grid and reads as deliberately hung rather than auto-laid-out. */}
-      {/* Paintings unveiled. Each painting clips from bottom to top with a
-          stagger, as if curtains are being drawn — museum-specific arrival,
-          not a generic fade. Reduced motion skips the clip and shows instantly. */}
-      <div className="flex w-full max-w-6xl flex-col items-center gap-12 md:flex-row md:items-start md:gap-6 lg:gap-8">
+      {/* Paintings hung on the wall. Perspective on the container gives the
+          children real 3D depth — each painting emerges from inside the wall
+          toward the viewer with stagger, like objects being pushed forward
+          through a surface. */}
+      <div
+        className="flex w-full max-w-6xl flex-col items-center gap-12 md:flex-row md:items-start md:gap-6 lg:gap-8"
+        style={{ perspective: "800px" }}
+      >
         {exhibits.map((exhibit, i) => (
           <motion.div
             key={exhibit.slug}
-            className={`relative ${exhibit.featured ? "md:flex-[1.15]" : "flex-1"}`}
-            initial={reduceMotion ? false : { clipPath: "inset(100% 0 0 0)", opacity: 0 }}
-            animate={{ clipPath: "inset(0% 0 0 0)", opacity: 1 }}
+            className={`group relative ${exhibit.featured ? "md:flex-[1.15]" : "flex-1"}`}
+            initial={
+              reduceMotion
+                ? false
+                : { opacity: 0, z: -120, rotateX: 6 }
+            }
+            animate={{ opacity: 1, z: 0, rotateX: 0 }}
             transition={{
               duration: reduceMotion ? 0 : PAINTING_UNVEIL,
               delay: reduceMotion ? 0 : 0.15 + i * PAINTING_STAGGER,
               ease: [0.16, 1, 0.3, 1],
             }}
+            style={{ transformStyle: "preserve-3d" }}
           >
-            {/* Directional spotlight — a cone of light falling from above
-                each painting. Gold-tinted for the featured frame. */}
+            {/* Ambient wall light — only appears on hover, as if the museum
+                notices you looking and aims a spotlight. Gold for featured. */}
             <div
               aria-hidden
-              className="pointer-events-none absolute -top-16 left-1/2 -z-10 h-48 w-[120%] -translate-x-1/2"
+              className="pointer-events-none absolute -inset-8 -z-10 rounded-full opacity-0 transition-opacity duration-500 ease-out group-hover:opacity-100 motion-reduce:transition-none"
               style={{
                 background: exhibit.featured
-                  ? "radial-gradient(50% 70% at 50% 0%, rgba(196,164,74,0.12), transparent 70%)"
-                  : "radial-gradient(50% 70% at 50% 0%, rgba(255,255,255,0.05), transparent 70%)",
+                  ? "radial-gradient(50% 50% at 50% 40%, rgba(196,164,74,0.1), transparent 70%)"
+                  : "radial-gradient(50% 50% at 50% 40%, rgba(255,255,255,0.045), transparent 70%)",
               }}
             />
+            <PaintingTilt>
             <Link
               href={`/museum/${exhibit.slug}`}
               onClick={(e) => enterExhibit(exhibit.slug, e)}
-              className="group block cursor-pointer text-left transition-transform duration-200 hover:scale-[1.04] motion-reduce:transition-none motion-reduce:hover:scale-100"
+              className="group block cursor-pointer text-left"
             >
               <OrnateFrame
                 tone={exhibit.featured ? "gold" : "neutral"}
@@ -139,7 +203,7 @@ export default function Museum() {
                   i % 2 !== 0 ? "md:mt-8" : ""
                 }`}
               >
-                <div className="relative">
+                <div className="relative transition-[filter] duration-300 ease-out group-hover:brightness-[1.15] motion-reduce:transition-none">
                   <Canvas
                     image={exhibit.cover}
                     sizes="(min-width: 768px) 20vw, 220px"
@@ -163,6 +227,7 @@ export default function Museum() {
                 </div>
               </OrnateFrame>
             </Link>
+            </PaintingTilt>
           </motion.div>
         ))}
       </div>
@@ -173,7 +238,7 @@ export default function Museum() {
           type="button"
           onClick={leaveMuseum}
           aria-label="Exit the museum"
-          className="rounded border border-gold px-6 py-3 text-sm text-ink transition hover:scale-105"
+          className="rounded border border-gold/50 px-6 py-3 text-sm text-gold transition-[border-color,box-shadow,transform] duration-200 hover:border-gold hover:shadow-[0_0_16px_-4px_rgba(196,164,74,0.25)] hover:scale-105"
         >
           {hall.exitLabel}
         </button>
