@@ -27,7 +27,7 @@ export default function ExitGlow() {
       transition={
         reduceMotion
           ? { duration: 0 }
-          : { duration: 2.4, times: [0, 0.4, 1], ease: "easeOut" }
+          : { duration: 1.2, times: [0, 0.4, 1], ease: "easeOut" }
       }
     />
   );

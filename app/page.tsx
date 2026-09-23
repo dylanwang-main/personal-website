@@ -14,7 +14,7 @@ import { entrance, exhibits } from "@/content/content";
  * tendrils via SVG displacement, disperses outward, and fades to nothing.
  * The letterforms themselves are the ink.
  */
-const INK_DURATION = 1.35;
+const INK_DURATION = 0.65;
 
 /**
  * The entrance. A lobby with a gate: the title sequence fills the viewport and
@@ -48,6 +48,15 @@ export default function Home() {
       return;
     }
 
+    try {
+      if (sessionStorage.getItem("ink-played")) {
+        go();
+        return;
+      }
+    } catch {
+      /* SSR or restricted storage */
+    }
+
     setEntering(true);
   }
 
@@ -73,6 +82,7 @@ export default function Home() {
     if (!entering) return;
     try {
       sessionStorage.setItem("museum-entered", "1");
+      sessionStorage.setItem("ink-played", "1");
     } catch {
       /* noop */
     }
@@ -216,7 +226,7 @@ export default function Home() {
             disabled={entering}
             aria-label={entrance.doorLabel}
             data-cursor="enter"
-            className="rounded border border-gold/50 px-8 py-3 font-display text-sm tracking-[0.14em] text-gold uppercase animate-[enter-glow_3.6s_ease-in-out_infinite] transition-[border-color] hover:border-gold hover:animate-none hover:shadow-[0_0_24px_-4px_rgba(196,164,74,0.35)]"
+            className="rounded border border-gold/50 px-8 py-3 font-display text-sm tracking-[0.14em] text-gold uppercase animate-[enter-glow_2.4s_ease-in-out_infinite] transition-[border-color] hover:border-gold hover:animate-none hover:shadow-[0_0_24px_-4px_rgba(196,164,74,0.35)]"
             animate={
               entering ? { opacity: 0, y: 8 } : { opacity: 1, y: 0 }
             }

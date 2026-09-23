@@ -108,7 +108,7 @@ export const entrance = {
    * the museum does not have.
    */
   roomsLabel: "Behind the door",
-  roomsNote: "Five rooms. The door is the only way in.",
+  roomsNote: "Five rooms inside.",
   /** Accessible name for the enter button */
   doorLabel: "Enter the museum",
 };
@@ -140,7 +140,7 @@ export const nav = {
  */
 export const footer = {
   credit: "Dylan Wang",
-  note: "Open anytime. No ticket required.",
+  note: "Built by hand.",
   links: [
     { label: "LinkedIn", href: "#" },
     { label: "Instagram", href: "#" },
@@ -152,7 +152,7 @@ export const footer = {
 
 export const hall = {
   heading: "Main Hall",
-  subtitle: "Every frame is a door.",
+  subtitle: "Pick a wall.",
   exitLabel: "Exit the Museum",
 };
 
@@ -178,9 +178,9 @@ export const featuredExhibitPage = {
 };
 
 export const exitScreen = {
-  heading: "The door is always open",
-  body: "If something in here made you curious, that was the point. Come find me.",
-  returnLabel: "Walk back in",
+  heading: "Thanks for stopping by",
+  body: "If anything here caught your eye, say hi.",
+  returnLabel: "Go back",
 };
 
 /**
@@ -196,8 +196,8 @@ export const exhibits: Exhibit[] = [
     slug: "projects",
     layout: "portfolio",
     name: "Projects",
-    subtitle: "Placeholder hook — things taken from idea to finished.",
-    teaser: "Finished things, and what they cost.",
+    subtitle: "Things I've built from scratch.",
+    teaser: "Shipped work.",
     cover: { src: "", label: "Projects — the wall" },
     paragraphs: [
       "Placeholder intro for the Projects room. A few sentences setting up what counts as a project here and why these particular ones are hung on the wall rather than the dozens that never left a notebook.",
@@ -214,8 +214,8 @@ export const exhibits: Exhibit[] = [
     slug: "currently-building",
     layout: "workshop",
     name: "Currently Building",
-    subtitle: "Placeholder hook — the wet paint room.",
-    teaser: "Wet paint. Unfinished on purpose.",
+    subtitle: "Work in progress. Check back.",
+    teaser: "Wet paint.",
     cover: { src: "", label: "Currently Building — the wall" },
     paragraphs: [
       "Placeholder intro for Currently Building. A short framing of this as a living exhibit: whatever is here is unfinished on purpose, and the room is expected to look different a month from now.",
@@ -232,8 +232,8 @@ export const exhibits: Exhibit[] = [
     layout: "featured",
     name: "Content Creation",
     subtitle:
-      "Placeholder hook — the featured wall: writing, video, everything published.",
-    teaser: "Writing, video, everything published.",
+      "Writing, video, and everything I've put out there.",
+    teaser: "Stuff I've made and published.",
     cover: { src: "", label: "Content Creation — the wall" },
     paragraphs: [
       "Placeholder intro for Content Creation, the featured exhibit. A few sentences on what gets made, where it goes, and who it is for — the reason this room gets the gold frame in the hall.",
@@ -251,8 +251,8 @@ export const exhibits: Exhibit[] = [
     slug: "hobbies",
     layout: "collection",
     name: "Hobbies",
-    subtitle: "Placeholder hook — what the hours outside work go to.",
-    teaser: "Hours spent with nothing riding on them.",
+    subtitle: "What I do when I'm not working.",
+    teaser: "Off the clock.",
     cover: { src: "", label: "Hobbies — the wall" },
     paragraphs: [
       "Placeholder intro for the Hobbies room. A short setup of the handful of things done purely because they are enjoyable, with no outcome attached to them.",
@@ -268,8 +268,8 @@ export const exhibits: Exhibit[] = [
     slug: "travels",
     layout: "journey",
     name: "Travels",
-    subtitle: "Placeholder hook — places visited, and what came back with me.",
-    teaser: "Places gone, and what came back.",
+    subtitle: "Places I've been.",
+    teaser: "Places I've been.",
     cover: { src: "", label: "Travels — the wall" },
     paragraphs: [
       "Placeholder intro for the Travels room. A few sentences on where the map has been filled in so far and what tends to get sought out on arrival.",

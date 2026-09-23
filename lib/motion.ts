@@ -31,13 +31,13 @@ export const EASE_PUSH = [0.72, 0, 0.24, 1] as const;
  * page), so the cost is paid on a first visit and never on the way back from the
  * exit, but it is still time before the visitor can do anything.
  */
-export const ARRIVAL_NAME = 0.9;
-export const ARRIVAL_HOLD = 1.0;
-export const ARRIVAL_LIFT = 0.8;
+export const ARRIVAL_NAME = 0.5;
+export const ARRIVAL_HOLD = 0.4;
+export const ARRIVAL_LIFT = 0.45;
 
 /** Kinetic tagline: how long a phrase holds, and the crossfade between them. */
-export const TAGLINE_HOLD = 2.8;
-export const TAGLINE_FADE = 0.5;
+export const TAGLINE_HOLD = 2.0;
+export const TAGLINE_FADE = 0.3;
 
 /**
  * Ambient background drift. Deliberately far longer than any interaction on the
@@ -47,7 +47,7 @@ export const TAGLINE_FADE = 0.5;
 export const AMBIENT_DRIFT = 42;
 
 /** The door's breathing cue: one full in-and-out. */
-export const DOOR_BREATH = 3.6;
+export const DOOR_BREATH = 2.4;
 
 /** Door: idle -> ajar, on hover/focus. */
 export const DOOR_CRACK = 0.16;
@@ -70,7 +70,7 @@ export const DOOR_SWING = 0.34;
  * morph animate on identical timing, and so the exhibit's copy can be delayed
  * behind it.
  */
-export const MORPH_DURATION = 0.5;
+export const MORPH_DURATION = 0.3;
 
 /**
  * Symmetric ease for the morph. Eases out of the wall and into the banner with
@@ -81,7 +81,7 @@ export const MORPH_DURATION = 0.5;
 export const EASE_MORPH = [0.4, 0, 0.2, 1] as const;
 
 /** How long the exhibit's copy waits for the morph to settle before arriving. */
-export const MORPH_SETTLE = 0.3;
+export const MORPH_SETTLE = 0.15;
 
 /**
  * Stepping through the entrance door. The site's signature moment and a
@@ -89,4 +89,4 @@ export const MORPH_SETTLE = 0.3;
  * to read as walking into a room, and several times the length of anything else
  * on the site.
  */
-export const THRESHOLD_DURATION = 1.6;
+export const THRESHOLD_DURATION = 0.8;

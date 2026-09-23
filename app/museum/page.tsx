@@ -18,7 +18,7 @@ import { beginMorph, frameLayoutId } from "@/components/Morph";
 import { exhibits, hall } from "@/content/content";
 
 /** Total exit duration: recession + ink dissolve. */
-const EXIT_DURATION = 1.4;
+const EXIT_DURATION = 0.65;
 
 /**
  * Cursor-reactive 3D tilt + depth push. The painting tilts toward the pointer
@@ -72,12 +72,12 @@ function PaintingTilt({ children }: { children: React.ReactNode }) {
 /** Stagger delay per painting in the hall unveil. */
 const PAINTING_STAGGER = 0.1;
 /** How long each painting takes to emerge from the wall. */
-const PAINTING_UNVEIL = 0.75;
+const PAINTING_UNVEIL = 0.4;
 
 /** Zoom-in duration when clicking a painting. */
-const ZOOM_IN = 0.7;
+const ZOOM_IN = 0.35;
 /** Hold at full-screen before navigating. */
-const ZOOM_HOLD = 0.25;
+const ZOOM_HOLD = 0.1;
 
 export default function Museum() {
   const router = useRouter();
@@ -106,12 +106,28 @@ export default function Museum() {
       return;
     }
 
+    try {
+      if (sessionStorage.getItem("zoom-played")) {
+        navigated.current = true;
+        beginMorph(slug);
+        router.push(`/museum/${slug}`);
+        return;
+      }
+    } catch {
+      /* SSR or restricted storage */
+    }
+
     setZooming(slug);
   }
 
   // Navigate after the zoom-in + hold completes.
   useEffect(() => {
     if (!zooming) return;
+    try {
+      sessionStorage.setItem("zoom-played", "1");
+    } catch {
+      /* SSR or restricted storage */
+    }
     const timer = setTimeout(() => {
       navigated.current = true;
       beginMorph(zooming);
@@ -123,6 +139,17 @@ export default function Museum() {
 
   function leaveMuseum() {
     if (busy()) return;
+
+    try {
+      if (sessionStorage.getItem("exit-played")) {
+        navigated.current = true;
+        router.push("/exit");
+        return;
+      }
+    } catch {
+      /* SSR or restricted storage */
+    }
+
     setExiting(true);
   }
 
@@ -157,6 +184,11 @@ export default function Museum() {
 
   useEffect(() => {
     if (!exiting) return;
+    try {
+      sessionStorage.setItem("exit-played", "1");
+    } catch {
+      /* SSR or restricted storage */
+    }
     const cleanup = runExitDissolve();
     const timer = setTimeout(() => {
       navigated.current = true;

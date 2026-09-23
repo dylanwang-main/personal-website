@@ -18,7 +18,7 @@ export default function Exit() {
     animate: "visible",
     variants: {
       hidden: {},
-      visible: { transition: { staggerChildren: reduceMotion ? 0 : 0.25, delayChildren: reduceMotion ? 0 : 0.6 } },
+      visible: { transition: { staggerChildren: reduceMotion ? 0 : 0.1, delayChildren: reduceMotion ? 0 : 0.2 } },
     },
   } as const;
 
@@ -27,7 +27,7 @@ export default function Exit() {
       hidden: { opacity: 0, y: reduceMotion ? 0 : 10 },
       visible: { opacity: 1, y: 0 },
     },
-    transition: { duration: reduceMotion ? 0 : 0.6, ease: [0.16, 1, 0.3, 1] as const },
+    transition: { duration: reduceMotion ? 0 : 0.3, ease: [0.16, 1, 0.3, 1] as const },
   };
 
   return (

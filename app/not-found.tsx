@@ -8,10 +8,9 @@ import Link from "next/link";
 export default function NotFound() {
   return (
     <main className="flex flex-1 flex-col items-center justify-center gap-6 px-6 py-16 text-center text-ink" style={{ background: "var(--wall)" }}>
-      <h1 className="text-3xl">This room does not exist</h1>
+      <h1 className="text-3xl">Nothing here</h1>
       <p className="max-w-md text-muted">
-        The door you tried leads nowhere. Head back to the entrance and find
-        your way from there.
+        Wrong turn. Head back and try again.
       </p>
       <Link
         href="/"
