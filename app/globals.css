@@ -108,6 +108,13 @@ h1 {
   border-radius: 3px;
 }
 
+/* Custom cursor: hide the system cursor on fine pointers. Touch and
+   reduced-motion users keep the default — the JS component does not
+   render for them, so this must also not hide theirs. */
+@media (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  * { cursor: none !important; }
+}
+
 :focus-visible {
   outline: 2px solid var(--gold-deep);
   outline-offset: 2px;

@@ -25,6 +25,7 @@ export default function ThemeToggle() {
       type="button"
       onClick={toggle}
       aria-label="Toggle light mode"
+      data-cursor="switch"
       className="shrink-0 rounded-full border border-frame bg-panel/70 px-3 py-2.5 text-xs whitespace-nowrap text-ink transition hover:scale-105"
       suppressHydrationWarning
     >

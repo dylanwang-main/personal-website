@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { pendingMorph } from "@/components/Morph";
-import { MORPH_DURATION, MORPH_SETTLE } from "@/lib/motion";
+
 
 /**
  * Everything on an exhibit page below the banner, held back until the frame has
@@ -41,12 +41,12 @@ export default function MorphReveal({
       className={className}
       // `false` renders straight at the animate values: visible immediately,
       // and identical markup on both sides of hydration.
-      initial={animated ? { opacity: 0, y: 12 } : false}
+      initial={animated ? { opacity: 0, y: 16 } : false}
       animate={{ opacity: 1, y: 0 }}
       transition={{
-        duration: animated ? MORPH_SETTLE : 0,
-        delay: animated ? MORPH_DURATION : 0,
-        ease: "easeOut",
+        duration: animated ? 0.4 : 0,
+        delay: animated ? 0.45 : 0,
+        ease: [0.16, 1, 0.3, 1],
       }}
     >
       {children}

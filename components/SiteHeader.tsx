@@ -31,6 +31,7 @@ export default function SiteHeader() {
         <div className="mx-auto flex h-full max-w-6xl items-center gap-6 px-6">
           <Link
             href="/"
+            data-cursor="home"
             className="font-display text-sm whitespace-nowrap text-ink"
           >
             {nav.homeLabel}
@@ -41,6 +42,7 @@ export default function SiteHeader() {
           <button
             type="button"
             onClick={() => setFloorPlanOpen(true)}
+            data-cursor="explore"
             className="rounded-full border border-frame bg-panel/70 px-3 py-2.5 text-xs whitespace-nowrap text-muted transition hover:scale-105 hover:text-ink"
           >
             {nav.floorPlanLabel}

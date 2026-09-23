@@ -31,6 +31,7 @@ export default function BackToHall({
     <Link
       href="/museum"
       onClick={() => beginMorph(slug)}
+      data-cursor="return"
       className={className}
       style={style}
     >

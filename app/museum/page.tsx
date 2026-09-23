@@ -1,7 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import {
+  AnimatePresence,
   motion,
   useMotionValue,
   useReducedMotion,
@@ -12,9 +14,11 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Canvas from "@/components/Canvas";
 import OrnateFrame from "@/components/OrnateFrame";
-import CurtainPanels, { CURTAIN_DURATION } from "@/components/CurtainPanels";
 import { beginMorph, frameLayoutId } from "@/components/Morph";
 import { exhibits, hall } from "@/content/content";
+
+/** Total exit duration: recession + ink dissolve. */
+const EXIT_DURATION = 1.4;
 
 /**
  * Cursor-reactive 3D tilt + depth push. The painting tilts toward the pointer
@@ -70,60 +74,162 @@ const PAINTING_STAGGER = 0.1;
 /** How long each painting takes to emerge from the wall. */
 const PAINTING_UNVEIL = 0.75;
 
+/** Zoom-in duration when clicking a painting. */
+const ZOOM_IN = 0.7;
+/** Hold at full-screen before navigating. */
+const ZOOM_HOLD = 0.25;
+
 export default function Museum() {
   const router = useRouter();
   const reduceMotion = useReducedMotion();
   const [exiting, setExiting] = useState(false);
+  const [zooming, setZooming] = useState<string | null>(null);
   const navigated = useRef(false);
 
   function busy() {
-    return exiting || navigated.current;
+    return exiting || zooming !== null || navigated.current;
   }
 
   /**
-   * Walk into a painting.
-   *
-   * Nothing is animated from here, and nothing is armed. Both pages render the
-   * room's frame under the same `layoutId` unconditionally, so the morph is
-   * already set up before the click — the only thing the click contributes is
-   * the flag saying this navigation is a morph. See Morph.
-   *
-   * A plain <Link>, so the whole frame is the target: the moulding, the canvas,
-   * and the wall label under it are one thing to click, the destination shows in
-   * the status bar, and the route is prefetched. That prefetch is load-bearing
-   * rather than an optimisation — framer can only pair the two frames if the
-   * exhibit mounts in the same commit the hall unmounts in, and a route that has
-   * to be fetched first mounts a beat later, with nothing left to fly from.
+   * Walk into a painting. The click starts a zoom-in sequence: the painting
+   * scales to fill the viewport, holds, then navigates. The room page handles
+   * the slam-down on arrival.
    */
   function enterExhibit(slug: string, e: React.MouseEvent) {
-    if (busy()) {
-      e.preventDefault();
+    e.preventDefault();
+    if (busy()) return;
+
+    if (reduceMotion) {
+      navigated.current = true;
+      beginMorph(slug);
+      router.push(`/museum/${slug}`);
       return;
     }
 
-    navigated.current = true;
-    beginMorph(slug);
+    setZooming(slug);
   }
+
+  // Navigate after the zoom-in + hold completes.
+  useEffect(() => {
+    if (!zooming) return;
+    const timer = setTimeout(() => {
+      navigated.current = true;
+      beginMorph(zooming);
+      router.push(`/museum/${zooming}`);
+    }, (ZOOM_IN + ZOOM_HOLD) * 1000);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [zooming]);
 
   function leaveMuseum() {
     if (busy()) return;
     setExiting(true);
   }
 
-  // The exit keeps its own timer: the curtains are an overlay, not something
-  // framer is driving, so nothing else knows when they have finished closing.
+  /**
+   * Animate the SVG displacement filter on the page content via rAF.
+   * Starts after the recession has had a beat to begin, then ramps the
+   * displacement to dissolve whatever remains into organic noise.
+   */
+  const exitDisplaceRef = useRef<SVGFEDisplacementMapElement>(null);
+
+  const runExitDissolve = useCallback(() => {
+    const el = exitDisplaceRef.current;
+    if (!el) return;
+    const delay = EXIT_DURATION * 0.25 * 1000; // start after recession begins
+    const dur = EXIT_DURATION * 0.65 * 1000;
+    let raf: number;
+    const timeout = setTimeout(() => {
+      const start = performance.now();
+      function frame(now: number) {
+        const t = Math.min((now - start) / dur, 1);
+        const eased = t * t;
+        el!.setAttribute("scale", String(eased * 70));
+        if (t < 1) raf = requestAnimationFrame(frame);
+      }
+      raf = requestAnimationFrame(frame);
+    }, delay);
+    return () => {
+      clearTimeout(timeout);
+      cancelAnimationFrame(raf!);
+    };
+  }, []);
+
   useEffect(() => {
     if (!exiting) return;
+    const cleanup = runExitDissolve();
     const timer = setTimeout(() => {
       navigated.current = true;
       router.push("/exit");
-    }, CURTAIN_DURATION * 1000);
-    return () => clearTimeout(timer);
+    }, (EXIT_DURATION + 0.1) * 1000);
+    return () => {
+      cleanup?.();
+      clearTimeout(timer);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [exiting]);
+  }, [exiting, runExitDissolve]);
 
   return (
     <main className="relative flex flex-1 flex-col items-center px-6 py-10">
+      {/* SVG filter for exit ink dissolve — applied to the content wrapper */}
+      <svg className="absolute h-0 w-0" aria-hidden>
+        <defs>
+          <filter
+            id="exit-dissolve"
+            x="-80%"
+            y="-80%"
+            width="260%"
+            height="260%"
+          >
+            <feTurbulence
+              type="fractalNoise"
+              baseFrequency="0.014 0.02"
+              numOctaves="4"
+              seed="11"
+            />
+            <feDisplacementMap
+              ref={exitDisplaceRef}
+              in="SourceGraphic"
+              scale="0"
+              xChannelSelector="R"
+              yChannelSelector="G"
+            />
+          </filter>
+        </defs>
+      </svg>
+
+      {/* Content wrapper: on exit, recedes into the wall (depth + scale)
+          then the ink dissolve filter warps what remains. */}
+      <motion.div
+        className="flex w-full flex-1 flex-col items-center"
+        style={{
+          perspective: "600px",
+          filter: exiting ? "url(#exit-dissolve)" : "none",
+          willChange: exiting || zooming ? "transform, filter, opacity" : "auto",
+        }}
+        animate={
+          exiting
+            ? { scale: 0.88, opacity: 0, rotateX: 4 }
+            : zooming
+              ? { opacity: 0, scale: 0.95 }
+              : { scale: 1, opacity: 1, rotateX: 0 }
+        }
+        transition={
+          exiting
+            ? {
+                scale: { duration: EXIT_DURATION * 0.7, ease: [0.4, 0, 1, 1] },
+                rotateX: { duration: EXIT_DURATION * 0.7, ease: [0.4, 0, 1, 1] },
+                opacity: {
+                  duration: EXIT_DURATION * 0.35,
+                  delay: EXIT_DURATION * 0.55,
+                  ease: "easeIn",
+                },
+              }
+            : zooming
+              ? { duration: ZOOM_IN * 0.6, ease: "easeIn" }
+              : { duration: 0 }
+        }
+      >
       {/* Hall heading: wider tracking and a tapered rule make this read as
           architectural lettering — a sign painted on the wall, not a page
           title. Clips from centre outward like text being etched into stone. */}
@@ -193,6 +299,7 @@ export default function Museum() {
             <Link
               href={`/museum/${exhibit.slug}`}
               onClick={(e) => enterExhibit(exhibit.slug, e)}
+              data-cursor="enter"
               className="group block cursor-pointer text-left"
             >
               <OrnateFrame
@@ -238,16 +345,67 @@ export default function Museum() {
           type="button"
           onClick={leaveMuseum}
           aria-label="Exit the museum"
+          data-cursor="exit"
           className="rounded border border-gold/50 px-6 py-3 text-sm text-gold transition-[border-color,box-shadow,transform] duration-200 hover:border-gold hover:shadow-[0_0_16px_-4px_rgba(196,164,74,0.25)] hover:scale-105"
         >
           {hall.exitLabel}
         </button>
       </div>
+      </motion.div>
 
-      {/* Curtains sit parted off-screen until the visitor leaves. */}
-      <div className="pointer-events-none fixed inset-0 z-50">
-        <CurtainPanels open={!exiting} />
-      </div>
+      {/* Darkness — catches the tail end after recession + dissolve */}
+      <motion.div
+        className="pointer-events-none fixed inset-0 z-50 bg-wall"
+        initial={false}
+        animate={{ opacity: exiting ? 1 : 0 }}
+        transition={
+          exiting
+            ? { duration: EXIT_DURATION * 0.3, delay: EXIT_DURATION * 0.65, ease: "easeIn" }
+            : { duration: 0 }
+        }
+      />
+
+      {/* Painting zoom-in overlay. Portalled to <body> so it escapes
+          PageTransition's transform containing block — fixed positioning
+          inside a transformed ancestor resolves against that ancestor,
+          not the viewport. */}
+      {typeof document !== "undefined" &&
+        createPortal(
+          <AnimatePresence>
+            {zooming && (() => {
+              const exhibit = exhibits.find((e) => e.slug === zooming);
+              if (!exhibit) return null;
+              return (
+                <motion.div
+                  key="zoom-overlay"
+                  className="fixed inset-0 z-[9998] flex items-center justify-center"
+                  initial={{ backgroundColor: "rgba(10,10,11,0)" }}
+                  animate={{ backgroundColor: "rgba(10,10,11,1)" }}
+                  transition={{ duration: ZOOM_IN * 0.8, ease: "easeIn" }}
+                >
+                  <motion.div
+                    initial={{ scale: 0.25, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{
+                      scale: { duration: ZOOM_IN, ease: [0.16, 1, 0.3, 1] },
+                      opacity: { duration: 0.2 },
+                    }}
+                    className="relative w-[85vw] max-w-4xl"
+                  >
+                    <OrnateFrame tone={exhibit.featured ? "gold" : "neutral"}>
+                      <Canvas
+                        image={exhibit.cover}
+                        sizes="85vw"
+                        className="aspect-[2/3] w-full md:aspect-[3/2]"
+                      />
+                    </OrnateFrame>
+                  </motion.div>
+                </motion.div>
+              );
+            })()}
+          </AnimatePresence>,
+          document.body,
+        )}
     </main>
   );
 }

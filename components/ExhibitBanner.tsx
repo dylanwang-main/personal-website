@@ -1,48 +1,65 @@
 "use client";
 
+import { useState } from "react";
+import { motion, useReducedMotion } from "framer-motion";
 import Canvas from "@/components/Canvas";
 import OrnateFrame from "@/components/OrnateFrame";
-import { frameLayoutId } from "@/components/Morph";
+import { frameLayoutId, pendingMorph } from "@/components/Morph";
 import type { Exhibit } from "@/content/content";
 
 /**
- * The room's framed artwork at the top of its page: the far side of the morph.
+ * The room's framed artwork at the top of its page.
  *
- * It is the same <OrnateFrame> that hangs in the hall, under the same
- * `layoutId`, so framer treats the two as one element and flies the whole thing
- * — moulding, studs, canvas — from the wall into this slot. The tone comes from
- * the exhibit's own `featured` flag, which is the same flag that made the frame
- * gold in the hall, so the featured room keeps its gold the whole way across
- * instead of swapping to plain moulding on landing.
+ * When arriving from the hall (a morph is pending), the banner starts
+ * oversized and slightly above its resting position, then slams down with
+ * a spring — fast approach, hard stop, slight bounce. The impact is the
+ * authored moment; the room content reveals after the bounce settles.
  *
- * The id is applied unconditionally, on every render, including a direct load
- * with no hall behind it. An unpaired id is inert — framer animates a layout id
- * only when it finds two of them in one commit — and applying it conditionally
- * is what would break the morph, since the condition would have to be known
- * before the page it is being read on has mounted.
- *
- * Nothing here is timed. The heading and body below are held back by
- * MorphReveal, so the room reads as landing first and being read second.
+ * On a direct load or header navigation, no slam — the banner is already
+ * in place and PageTransition handles the route entry.
  */
 export default function ExhibitBanner({
   exhibit,
   sizes,
 }: {
   exhibit: Exhibit;
-  /** Passed to next/image. The two exhibit layouts run at different widths. */
   sizes: string;
 }) {
+  const reduceMotion = useReducedMotion();
+  const [arrived] = useState(() => pendingMorph() === exhibit.slug);
+  const slam = arrived && !reduceMotion;
+
   return (
-    <OrnateFrame
-      tone={exhibit.featured ? "gold" : "neutral"}
-      layoutId={frameLayoutId(exhibit.slug)}
+    <motion.div
+      initial={
+        slam
+          ? { scale: 1.12, y: -30, opacity: 0.8 }
+          : false
+      }
+      animate={{ scale: 1, y: 0, opacity: 1 }}
+      transition={
+        slam
+          ? {
+              type: "spring",
+              stiffness: 600,
+              damping: 28,
+              mass: 0.8,
+              opacity: { duration: 0.15 },
+            }
+          : { duration: 0 }
+      }
     >
-      <Canvas
-        image={exhibit.cover}
-        sizes={sizes}
-        className="w-full"
-        style={{ height: "clamp(200px, 40svh, 400px)" }}
-      />
-    </OrnateFrame>
+      <OrnateFrame
+        tone={exhibit.featured ? "gold" : "neutral"}
+        layoutId={frameLayoutId(exhibit.slug)}
+      >
+        <Canvas
+          image={exhibit.cover}
+          sizes={sizes}
+          className="w-full"
+          style={{ height: "clamp(200px, 40svh, 400px)" }}
+        />
+      </OrnateFrame>
+    </motion.div>
   );
 }

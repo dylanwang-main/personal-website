@@ -55,6 +55,7 @@ export default function SiteFooter() {
           <li>
             <a
               href={footer.contact.href}
+              data-cursor="say hello"
               className="transition-colors hover:text-ink"
             >
               {footer.contact.label}

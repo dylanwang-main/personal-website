@@ -46,6 +46,7 @@ export default function Exit() {
       <motion.div {...item}>
         <Link
           href="/"
+          data-cursor="return"
           className="relative rounded border border-gold px-6 py-3 text-sm text-gold transition hover:scale-105"
         >
           {exitScreen.returnLabel}

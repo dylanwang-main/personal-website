@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Analytics } from "@vercel/analytics/next";
 import { Cinzel, Raleway } from "next/font/google";
 import ArrivalCurtain from "@/components/ArrivalCurtain";
+import CustomCursor from "@/components/CustomCursor";
 import PageTransition from "@/components/PageTransition";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
@@ -73,6 +74,7 @@ export default function RootLayout({
         {/* Outside PageTransition on purpose — it is a full-viewport overlay,
             and PageTransition's transform would trap it. See ArrivalCurtain. */}
         <ArrivalCurtain />
+        <CustomCursor />
         <SiteHeader />
         <PageTransition>{children}</PageTransition>
         <SiteFooter />

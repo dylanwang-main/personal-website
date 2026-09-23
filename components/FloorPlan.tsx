@@ -127,6 +127,7 @@ export default function FloorPlan({
                 type="button"
                 onClick={onClose}
                 aria-label={nav.floorPlanClose}
+                data-cursor="close"
                 className="rounded px-2 py-1 text-xs text-muted transition hover:text-ink"
               >
                 {nav.floorPlanClose}
@@ -240,6 +241,7 @@ function FloorPlanLink({
         if (here) e.preventDefault();
         onClick();
       }}
+      data-cursor={here ? undefined : "visit"}
       aria-current={here ? "page" : undefined}
       className={`group flex items-center gap-3 rounded px-3 py-2 text-sm transition ${
         here

@@ -215,6 +215,7 @@ export default function Home() {
             onClick={enterMuseum}
             disabled={entering}
             aria-label={entrance.doorLabel}
+            data-cursor="enter"
             className="rounded border border-gold/50 px-8 py-3 font-display text-sm tracking-[0.14em] text-gold uppercase animate-[enter-glow_3.6s_ease-in-out_infinite] transition-[border-color] hover:border-gold hover:animate-none hover:shadow-[0_0_24px_-4px_rgba(196,164,74,0.35)]"
             animate={
               entering ? { opacity: 0, y: 8 } : { opacity: 1, y: 0 }
