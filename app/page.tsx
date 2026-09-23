@@ -162,7 +162,7 @@ export default function Home() {
           className="absolute inset-0"
           style={{
             background:
-              "radial-gradient(50% 40% at 50% 40%, rgba(196,164,74,0.06), transparent 70%)",
+              "radial-gradient(50% 40% at 50% 40%, rgba(176,152,114,0.06), transparent 70%)",
           }}
         />
       </motion.div>
@@ -226,7 +226,7 @@ export default function Home() {
             disabled={entering}
             aria-label={entrance.doorLabel}
             data-cursor="enter"
-            className="rounded border border-gold/50 px-8 py-3 font-display text-sm tracking-[0.14em] text-gold uppercase animate-[enter-glow_2.4s_ease-in-out_infinite] transition-[border-color] hover:border-gold hover:animate-none hover:shadow-[0_0_24px_-4px_rgba(196,164,74,0.35)]"
+            className="rounded border border-gold/50 px-8 py-3 font-display text-sm tracking-[0.14em] text-gold uppercase animate-[enter-glow_2.4s_ease-in-out_infinite] transition-[border-color] hover:border-gold hover:animate-none hover:shadow-[0_0_24px_-4px_rgba(176,152,114,0.35)]"
             animate={
               entering ? { opacity: 0, y: 8 } : { opacity: 1, y: 0 }
             }

@@ -6,7 +6,7 @@ import { footer } from "@/content/content";
  * enough to never compete with the room above it.
  *
  * No border-top: the plaque floats on the wall like an object, not a page
- * section. Cinzel for the name keeps it in the museum's display voice.
+ * section. The display face for the name keeps it in the museum's voice.
  */
 export default function SiteFooter() {
   return (

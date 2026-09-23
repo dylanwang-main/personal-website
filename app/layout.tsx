@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Analytics } from "@vercel/analytics/next";
-import { Cinzel, Raleway } from "next/font/google";
+import { Cormorant_Garamond, Raleway } from "next/font/google";
 import ArrivalCurtain from "@/components/ArrivalCurtain";
 import CustomCursor from "@/components/CustomCursor";
 import PageTransition from "@/components/PageTransition";
@@ -9,9 +9,10 @@ import SiteFooter from "@/components/SiteFooter";
 import { site } from "@/content/content";
 import "./globals.css";
 
-const cinzel = Cinzel({
+const cormorantGaramond = Cormorant_Garamond({
   variable: "--font-cinzel",
   subsets: ["latin"],
+  weight: ["400", "600", "700"],
 });
 
 const raleway = Raleway({
@@ -20,7 +21,7 @@ const raleway = Raleway({
 });
 
 export const viewport: Viewport = {
-  themeColor: "#0a0a0b",
+  themeColor: "#090807",
   width: "device-width",
   initialScale: 1,
 };
@@ -60,7 +61,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${cinzel.variable} ${raleway.variable} h-full antialiased`}
+      className={`${cormorantGaramond.variable} ${raleway.variable} h-full antialiased`}
       // The theme init script adds `dark` before hydration, so the class list
       // legitimately differs from the server's.
       suppressHydrationWarning

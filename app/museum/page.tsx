@@ -323,7 +323,7 @@ export default function Museum() {
               className="pointer-events-none absolute -inset-8 -z-10 rounded-full opacity-0 transition-opacity duration-500 ease-out group-hover:opacity-100 motion-reduce:transition-none"
               style={{
                 background: exhibit.featured
-                  ? "radial-gradient(50% 50% at 50% 40%, rgba(196,164,74,0.1), transparent 70%)"
+                  ? "radial-gradient(50% 50% at 50% 40%, rgba(176,152,114,0.1), transparent 70%)"
                   : "radial-gradient(50% 50% at 50% 40%, rgba(255,255,255,0.045), transparent 70%)",
               }}
             />
@@ -378,7 +378,7 @@ export default function Museum() {
           onClick={leaveMuseum}
           aria-label="Exit the museum"
           data-cursor="exit"
-          className="rounded border border-gold/50 px-6 py-3 text-sm text-gold transition-[border-color,box-shadow,transform] duration-200 hover:border-gold hover:shadow-[0_0_16px_-4px_rgba(196,164,74,0.25)] hover:scale-105"
+          className="rounded border border-gold/50 px-6 py-3 text-sm text-gold transition-[border-color,box-shadow,transform] duration-200 hover:border-gold hover:shadow-[0_0_16px_-4px_rgba(176,152,114,0.25)] hover:scale-105"
         >
           {hall.exitLabel}
         </button>

@@ -35,7 +35,7 @@ export default function FeaturedRoom({ exhibit }: { exhibit: Exhibit }) {
                 className="text-xs tracking-[0.22em] uppercase"
                 style={{
                   color: "var(--gold)",
-                  textShadow: "0 0 20px rgba(196,164,74,0.3)",
+                  textShadow: "0 0 20px rgba(176,152,114,0.3)",
                 }}
               >
                 {featuredExhibitPage.eyebrow}
@@ -54,7 +54,7 @@ export default function FeaturedRoom({ exhibit }: { exhibit: Exhibit }) {
             style={{
               background:
                 "linear-gradient(90deg, var(--gold), var(--gold-deep) 40%, transparent 80%)",
-              boxShadow: "0 0 8px rgba(196,164,74,0.15)",
+              boxShadow: "0 0 8px rgba(176,152,114,0.15)",
             }}
           />
         </header>
@@ -82,7 +82,7 @@ export default function FeaturedRoom({ exhibit }: { exhibit: Exhibit }) {
                   style={{
                     background:
                       "linear-gradient(90deg, var(--gold), transparent 60%)",
-                    boxShadow: "0 0 6px rgba(196,164,74,0.1)",
+                    boxShadow: "0 0 6px rgba(176,152,114,0.1)",
                   }}
                 />
                 <p className="font-display text-lg leading-relaxed text-ink italic">
@@ -100,7 +100,7 @@ export default function FeaturedRoom({ exhibit }: { exhibit: Exhibit }) {
             className="pointer-events-none absolute -top-8 left-1/2 -z-10 h-32 w-[140%] -translate-x-1/2"
             style={{
               background:
-                "radial-gradient(50% 60% at 50% 0%, rgba(196,164,74,0.04), transparent 70%)",
+                "radial-gradient(50% 60% at 50% 0%, rgba(176,152,114,0.04), transparent 70%)",
             }}
           />
           <h2 className="text-xs tracking-[0.14em] text-muted uppercase">
@@ -134,7 +134,7 @@ export default function FeaturedRoom({ exhibit }: { exhibit: Exhibit }) {
         <div className="flex">
           <BackToHall
             slug={slug}
-            className="rounded border border-gold/50 px-6 py-3 text-sm text-gold transition hover:border-gold hover:shadow-[0_0_16px_-4px_rgba(196,164,74,0.25)]"
+            className="rounded border border-gold/50 px-6 py-3 text-sm text-gold transition hover:border-gold hover:shadow-[0_0_16px_-4px_rgba(176,152,114,0.25)]"
           >
             {exhibitPage.backLabel}
           </BackToHall>

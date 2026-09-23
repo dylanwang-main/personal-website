@@ -94,7 +94,7 @@ export default function CustomCursor() {
           height: 9,
           top: -4.5,
           left: -4.5,
-          boxShadow: "0 0 6px rgba(196,164,74,0.4)",
+          boxShadow: "0 0 6px rgba(176,152,114,0.4)",
         }}
         animate={pressed ? { scale: 0.55 } : { scale: 1 }}
         transition={

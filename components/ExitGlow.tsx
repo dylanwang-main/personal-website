@@ -16,7 +16,7 @@ export default function ExitGlow() {
       className="pointer-events-none absolute inset-0"
       style={{
         background:
-          "radial-gradient(50% 40% at 50% 45%, rgba(212,175,55,0.12), transparent 70%)",
+          "radial-gradient(50% 40% at 50% 45%, rgba(176,152,114,0.10), transparent 70%)",
       }}
       initial={reduceMotion ? { opacity: 0.3 } : { opacity: 0, scale: 0.9 }}
       animate={

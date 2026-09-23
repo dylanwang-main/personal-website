@@ -66,13 +66,13 @@ export type Exhibit = {
 };
 
 export const site = {
-  title: "Dylan Wang",
+  title: "DYLAN WANG",
   description: "A personal museum — projects, content, hobbies, and travels.",
 };
 
 export const entrance = {
   /** The largest thing on the site. Shown in the arrival sequence, then as the hero. */
-  name: "Dylan Wang",
+  name: "DYLAN WANG",
   /**
    * Cycled one at a time under the name. Short enough to read at a glance —
    * these are labels for what the work currently is, not sentences. Two or more
@@ -122,7 +122,7 @@ export const entrance = {
 export const nav = {
   /** Accessible name for the header landmark */
   label: "Museum navigation",
-  homeLabel: "Dylan Wang",
+  homeLabel: "DYLAN WANG",
   /** Floor plan overlay */
   floorPlanLabel: "Floor Plan",
   floorPlanClose: "Close",
@@ -139,7 +139,7 @@ export const nav = {
  * website footer.
  */
 export const footer = {
-  credit: "Dylan Wang",
+  credit: "DYLAN WANG",
   note: "Built by hand.",
   links: [
     { label: "LinkedIn", href: "#" },

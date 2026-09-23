@@ -111,7 +111,7 @@ export default function JourneyRoom({ exhibit }: { exhibit: Exhibit }) {
         <div className="flex justify-center pt-4">
           <BackToHall
             slug={slug}
-            className="rounded border border-gold/50 px-6 py-3 text-sm text-gold transition hover:border-gold hover:shadow-[0_0_16px_-4px_rgba(196,164,74,0.25)]"
+            className="rounded border border-gold/50 px-6 py-3 text-sm text-gold transition hover:border-gold hover:shadow-[0_0_16px_-4px_rgba(176,152,114,0.25)]"
           >
             {exhibitPage.backLabel}
           </BackToHall>
