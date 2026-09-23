@@ -17,15 +17,16 @@ import { motion, useMotionValue, useSpring, AnimatePresence } from "framer-motio
  * Hidden on coarse pointers (touch) and when reduced motion is preferred.
  */
 export default function CustomCursor() {
-  const x = useMotionValue(-100);
-  const y = useMotionValue(-100);
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  const opacity = useMotionValue(0);
   const [label, setLabel] = useState("");
   const [visible, setVisible] = useState(false);
   const [pressed, setPressed] = useState(false);
   const [ripple, setRipple] = useState(0);
   const labelRef = useRef("");
 
-  const spring = { stiffness: 1200, damping: 55, mass: 0.12 };
+  const spring = { stiffness: 8000, damping: 200, mass: 0.01 };
   const sx = useSpring(x, spring);
   const sy = useSpring(y, spring);
 
@@ -38,6 +39,7 @@ export default function CustomCursor() {
     function onMove(e: PointerEvent) {
       x.set(e.clientX);
       y.set(e.clientY);
+      opacity.set(1);
     }
 
     function onOver(e: MouseEvent) {
@@ -59,8 +61,7 @@ export default function CustomCursor() {
     }
 
     function onLeave() {
-      x.set(-100);
-      y.set(-100);
+      opacity.set(0);
     }
 
     window.addEventListener("pointermove", onMove, { passive: true });
@@ -76,14 +77,14 @@ export default function CustomCursor() {
       window.removeEventListener("pointerup", onUp);
       document.removeEventListener("mouseleave", onLeave);
     };
-  }, [x, y]);
+  }, [x, y, opacity]);
 
   if (!visible) return null;
 
   return (
     <motion.div
       className="pointer-events-none fixed top-0 left-0 z-[9999]"
-      style={{ x: sx, y: sy }}
+      style={{ x: sx, y: sy, opacity }}
     >
       {/* The dot — squeezes on press, springs back on release */}
       <motion.div

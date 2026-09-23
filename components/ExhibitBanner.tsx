@@ -33,7 +33,7 @@ export default function ExhibitBanner({
     <motion.div
       initial={
         slam
-          ? { scale: 1.12, y: -30, opacity: 0.8 }
+          ? { scale: 1.15, y: -24, opacity: 1 }
           : false
       }
       animate={{ scale: 1, y: 0, opacity: 1 }}
@@ -41,17 +41,16 @@ export default function ExhibitBanner({
         slam
           ? {
               type: "spring",
-              stiffness: 600,
-              damping: 28,
-              mass: 0.8,
-              opacity: { duration: 0.15 },
+              stiffness: 350,
+              damping: 32,
+              mass: 0.5,
             }
           : { duration: 0 }
       }
     >
       <OrnateFrame
         tone={exhibit.featured ? "gold" : "neutral"}
-        layoutId={frameLayoutId(exhibit.slug)}
+        layoutId={slam ? undefined : frameLayoutId(exhibit.slug)}
       >
         <Canvas
           image={exhibit.cover}
