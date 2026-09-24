@@ -119,7 +119,7 @@ export default function FloorPlan({
             transition={{ duration: 0.2, ease: [0.2, 0.9, 0.3, 1] }}
           >
             <div className="mb-5 flex items-center justify-between">
-              <h2 className="font-display text-sm tracking-[0.14em] uppercase">
+              <h2 className="font-display text-sm tracking-[0.08em] uppercase">
                 {nav.floorPlanLabel}
               </h2>
               <button

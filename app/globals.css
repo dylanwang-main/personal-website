@@ -119,12 +119,6 @@ h1 {
   }
 }
 
-/* Entrance: the Enter button breathes a gold glow to beckon. */
-@keyframes enter-glow {
-  0%, 100% { box-shadow: 0 0 12px -6px rgba(176,152,114,0.0); }
-  50% { box-shadow: 0 0 20px -4px rgba(176,152,114,0.25); }
-}
-
 /* Floor plan: the "you are here" dot breathes gently. */
 @keyframes dot-breathe {
   0%, 100% { opacity: 1; transform: scale(1); }

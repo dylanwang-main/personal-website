@@ -33,7 +33,7 @@ export default function KineticTagline({ phrases }: { phrases: string[] }) {
   return (
     // Grid stacking: every phrase occupies the same cell, so the block is as
     // tall as the tallest phrase and never resizes mid-cycle.
-    <span className="grid text-sm tracking-[0.18em] text-muted uppercase">
+    <span className="grid text-sm tracking-[0.12em] text-muted uppercase">
       {phrases.map((phrase, i) => {
         const current = i === index;
 

@@ -22,7 +22,7 @@ export default function Placard({
             "linear-gradient(90deg, var(--frame), transparent 80%)",
         }}
       />
-      <span className="text-[0.65rem] tracking-[0.16em] text-muted uppercase">
+      <span className="text-[0.65rem] tracking-[0.1em] text-muted uppercase">
         {label}
       </span>
       <span className="text-sm text-ink">{value}</span>

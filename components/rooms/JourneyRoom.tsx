@@ -78,7 +78,7 @@ export default function JourneyRoom({ exhibit }: { exhibit: Exhibit }) {
 
               {/* Caption — the journal entry beneath the scene */}
               <div className="mx-auto flex max-w-xl flex-col gap-2 text-center">
-                <span className="text-[0.7rem] tracking-[0.14em] text-muted/70 uppercase">
+                <span className="text-[0.7rem] tracking-[0.08em] text-muted/70 uppercase">
                   {image.label}
                 </span>
                 {detail[i] && (
@@ -111,7 +111,7 @@ export default function JourneyRoom({ exhibit }: { exhibit: Exhibit }) {
         <div className="flex justify-center pt-4">
           <BackToHall
             slug={slug}
-            className="rounded border border-gold/50 px-6 py-3 text-sm text-gold transition hover:border-gold hover:shadow-[0_0_16px_-4px_rgba(176,152,114,0.25)]"
+            className="rounded border border-frame px-6 py-3 text-sm text-muted transition-[border-color,color] hover:border-ink hover:text-ink"
           >
             {exhibitPage.backLabel}
           </BackToHall>

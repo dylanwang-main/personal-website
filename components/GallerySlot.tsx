@@ -55,7 +55,7 @@ export default function GallerySlot({
         />
         {overline && (
           <span
-            className="text-[0.65rem] tracking-[0.16em] uppercase"
+            className="text-[0.65rem] tracking-[0.1em] uppercase"
             style={{ color: "var(--gold)" }}
           >
             {overline}

@@ -14,7 +14,7 @@ export default function NotFound() {
       </p>
       <Link
         href="/"
-        className="rounded border border-gold px-6 py-3 text-sm text-gold transition hover:scale-105"
+        className="rounded border border-frame px-6 py-3 text-sm text-muted transition-[border-color,color] hover:border-ink hover:text-ink"
       >
         Return to Entrance
       </Link>

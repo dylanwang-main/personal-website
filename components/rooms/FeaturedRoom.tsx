@@ -61,7 +61,7 @@ export default function FeaturedRoom({ exhibit }: { exhibit: Exhibit }) {
 
         {/* Lead paragraph against a labelled rail */}
         <div className="flex flex-col gap-8 md:flex-row md:gap-12">
-          <h2 className="shrink-0 text-xs tracking-[0.14em] text-muted uppercase md:w-32 md:pt-3">
+          <h2 className="shrink-0 text-xs tracking-[0.08em] text-muted uppercase md:w-32 md:pt-3">
             {featuredExhibitPage.leadLabel}
           </h2>
 
@@ -103,7 +103,7 @@ export default function FeaturedRoom({ exhibit }: { exhibit: Exhibit }) {
                 "radial-gradient(50% 60% at 50% 0%, rgba(176,152,114,0.04), transparent 70%)",
             }}
           />
-          <h2 className="text-xs tracking-[0.14em] text-muted uppercase">
+          <h2 className="text-xs tracking-[0.08em] text-muted uppercase">
             {exhibitPage.galleryLabel}
           </h2>
 

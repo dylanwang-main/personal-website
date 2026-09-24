@@ -47,7 +47,7 @@ export default function Exit() {
         <Link
           href="/"
           data-cursor="return"
-          className="relative rounded border border-gold px-6 py-3 text-sm text-gold transition hover:scale-105"
+          className="relative rounded border border-frame px-6 py-3 text-sm text-muted transition-[border-color,color] hover:border-ink hover:text-ink"
         >
           {exitScreen.returnLabel}
         </Link>

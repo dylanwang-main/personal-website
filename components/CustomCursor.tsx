@@ -126,7 +126,7 @@ export default function CustomCursor() {
 
       {/* Contextual label */}
       <motion.span
-        className="absolute left-5 top-[-0.45rem] whitespace-nowrap font-display text-[0.65rem] tracking-[0.14em] text-gold uppercase"
+        className="absolute left-5 top-[-0.45rem] whitespace-nowrap font-display text-[0.65rem] tracking-[0.08em] text-gold uppercase"
         initial={false}
         animate={{
           opacity: label ? 1 : 0,

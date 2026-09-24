@@ -13,7 +13,7 @@ export default function SiteFooter() {
     <footer className="px-6 py-10">
       <div className="mx-auto flex max-w-6xl flex-col items-center gap-4 text-center">
         {/* Credit line — the museum's name in display type */}
-        <p className="font-display text-xs tracking-[0.18em] text-muted/70 uppercase">
+        <p className="font-display text-xs tracking-[0.12em] text-muted/70 uppercase">
           {footer.credit}
         </p>
 

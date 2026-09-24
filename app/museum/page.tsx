@@ -378,7 +378,7 @@ export default function Museum() {
           onClick={leaveMuseum}
           aria-label="Exit the museum"
           data-cursor="exit"
-          className="rounded border border-gold/50 px-6 py-3 text-sm text-gold transition-[border-color,box-shadow,transform] duration-200 hover:border-gold hover:shadow-[0_0_16px_-4px_rgba(176,152,114,0.25)] hover:scale-105"
+          className="rounded border border-frame px-6 py-3 text-sm text-muted transition-[border-color,color] duration-200 hover:border-ink hover:text-ink"
         >
           {hall.exitLabel}
         </button>

@@ -226,7 +226,7 @@ export default function Home() {
             disabled={entering}
             aria-label={entrance.doorLabel}
             data-cursor="enter"
-            className="rounded border border-gold/50 px-8 py-3 font-display text-sm tracking-[0.14em] text-gold uppercase animate-[enter-glow_2.4s_ease-in-out_infinite] transition-[border-color] hover:border-gold hover:animate-none hover:shadow-[0_0_24px_-4px_rgba(176,152,114,0.35)]"
+            className="rounded border border-frame px-8 py-3 font-display text-sm tracking-[0.08em] text-muted uppercase transition-[border-color,color] hover:border-ink hover:text-ink"
             animate={
               entering ? { opacity: 0, y: 8 } : { opacity: 1, y: 0 }
             }
@@ -304,8 +304,8 @@ export default function Home() {
 
                 <p className="text-sm text-muted">
                   <span
-                    className="tracking-[0.16em] uppercase"
-                    style={{ color: "var(--gold-deep)" }}
+                    className="tracking-[0.1em] uppercase"
+                    style={{ color: "var(--muted)" }}
                   >
                     {entrance.currentlyLabel}
                   </span>{" "}
@@ -327,7 +327,7 @@ export default function Home() {
             {/* Room teasers */}
             <section className="mx-auto flex w-full max-w-5xl flex-col gap-8 px-6 pb-28">
               <div className="flex flex-col gap-2">
-                <h2 className="text-xs tracking-[0.16em] text-muted uppercase">
+                <h2 className="text-xs tracking-[0.1em] text-muted uppercase">
                   {entrance.roomsLabel}
                 </h2>
                 <p className="text-sm text-muted">{entrance.roomsNote}</p>
