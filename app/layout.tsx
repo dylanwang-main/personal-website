@@ -3,6 +3,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { Cormorant_Garamond, Raleway } from "next/font/google";
 import ArrivalCurtain from "@/components/ArrivalCurtain";
 import CustomCursor from "@/components/CustomCursor";
+import DigitalGrid from "@/components/DigitalGrid";
 import PageTransition from "@/components/PageTransition";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
@@ -74,6 +75,7 @@ export default function RootLayout({
       <body className="flex min-h-full flex-col bg-wall pt-14 text-ink">
         {/* Outside PageTransition on purpose — it is a full-viewport overlay,
             and PageTransition's transform would trap it. See ArrivalCurtain. */}
+        <DigitalGrid />
         <ArrivalCurtain />
         <CustomCursor />
         <SiteHeader />
