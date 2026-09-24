@@ -21,7 +21,7 @@ export default function DigitalGrid() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const mouse = useRef({ x: -1000, y: -1000 });
   const raf = useRef(0);
-  const scrollY = useRef(0);
+  const dirty = useRef(true);
 
   useEffect(() => {
     if (window.matchMedia("(pointer: coarse)").matches) return;
@@ -71,40 +71,37 @@ export default function DigitalGrid() {
     function onMove(e: PointerEvent) {
       mouse.current.x = e.clientX;
       mouse.current.y = e.clientY;
-    }
-
-    function onScroll() {
-      scrollY.current = window.scrollY;
+      dirty.current = true;
     }
 
     function onLeave() {
       mouse.current.x = -1000;
       mouse.current.y = -1000;
+      dirty.current = true;
     }
 
     function draw() {
+      raf.current = requestAnimationFrame(draw);
+      if (!dirty.current) return;
+      dirty.current = false;
+
       const w = window.innerWidth;
       const h = window.innerHeight;
       ctx!.clearRect(0, 0, w, h);
 
       const mx = mouse.current.x;
       const my = mouse.current.y;
-      const sy = scrollY.current;
       const spacing = DOT_SPACING;
       const r2 = DISPLACE_RADIUS * DISPLACE_RADIUS;
-
-      // Offset grid by scroll so it feels fixed to the "wall"
-      const offsetX = 0;
-      const offsetY = -(sy % spacing);
 
       // Draw grid lines (hairlines)
       ctx!.strokeStyle = `rgba(${rgb.r},${rgb.g},${rgb.b},${LINE_OPACITY})`;
       ctx!.lineWidth = 0.5;
 
       // Vertical lines
-      for (let x = offsetX; x <= w; x += spacing) {
+      for (let x = 0; x <= w; x += spacing) {
         ctx!.beginPath();
-        for (let y = offsetY - spacing; y <= h + spacing; y += 4) {
+        for (let y = -spacing; y <= h + spacing; y += 4) {
           const dx = x - mx;
           const dy = y - my;
           const dist2 = dx * dx + dy * dy;
@@ -116,7 +113,7 @@ export default function DigitalGrid() {
             px += (dx / dist) * force;
             py += (dy / dist) * force;
           }
-          if (y === offsetY - spacing) {
+          if (y === -spacing) {
             ctx!.moveTo(px, py);
           } else {
             ctx!.lineTo(px, py);
@@ -126,9 +123,9 @@ export default function DigitalGrid() {
       }
 
       // Horizontal lines
-      for (let y = offsetY; y <= h; y += spacing) {
+      for (let y = 0; y <= h; y += spacing) {
         ctx!.beginPath();
-        for (let x = offsetX - spacing; x <= w + spacing; x += 4) {
+        for (let x = -spacing; x <= w + spacing; x += 4) {
           const dx = x - mx;
           const dy = y - my;
           const dist2 = dx * dx + dy * dy;
@@ -140,7 +137,7 @@ export default function DigitalGrid() {
             px += (dx / dist) * force;
             py += (dy / dist) * force;
           }
-          if (x === offsetX - spacing) {
+          if (x === -spacing) {
             ctx!.moveTo(px, py);
           } else {
             ctx!.lineTo(px, py);
@@ -151,8 +148,8 @@ export default function DigitalGrid() {
 
       // Draw dots at intersections
       ctx!.fillStyle = `rgba(${rgb.r},${rgb.g},${rgb.b},${DOT_OPACITY})`;
-      for (let x = offsetX; x <= w; x += spacing) {
-        for (let y = offsetY; y <= h + spacing; y += spacing) {
+      for (let x = 0; x <= w; x += spacing) {
+        for (let y = 0; y <= h + spacing; y += spacing) {
           const dx = x - mx;
           const dy = y - my;
           const dist2 = dx * dx + dy * dy;
@@ -176,23 +173,19 @@ export default function DigitalGrid() {
         }
       }
 
-      raf.current = requestAnimationFrame(draw);
     }
 
     raf.current = requestAnimationFrame(draw);
 
     window.addEventListener("pointermove", onMove, { passive: true });
-    window.addEventListener("scroll", onScroll, { passive: true });
     document.addEventListener("mouseleave", onLeave);
-    window.addEventListener("resize", resize);
+    window.addEventListener("resize", () => { resize(); dirty.current = true; });
 
     return () => {
       cancelAnimationFrame(raf.current);
       observer.disconnect();
       window.removeEventListener("pointermove", onMove);
-      window.removeEventListener("scroll", onScroll);
       document.removeEventListener("mouseleave", onLeave);
-      window.removeEventListener("resize", resize);
     };
   }, []);
 
