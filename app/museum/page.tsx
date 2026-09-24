@@ -323,8 +323,8 @@ export default function Museum() {
               className="pointer-events-none absolute -inset-8 -z-10 rounded-full opacity-0 transition-opacity duration-500 ease-out group-hover:opacity-100 motion-reduce:transition-none"
               style={{
                 background: exhibit.featured
-                  ? "radial-gradient(50% 50% at 50% 40%, rgba(176,152,114,0.1), transparent 70%)"
-                  : "radial-gradient(50% 50% at 50% 40%, rgba(255,255,255,0.045), transparent 70%)",
+                  ? "radial-gradient(50% 50% at 50% 40%, color-mix(in srgb, var(--gold) 10%, transparent), transparent 70%)"
+                  : "radial-gradient(50% 50% at 50% 40%, color-mix(in srgb, var(--ink) 4%, transparent), transparent 70%)",
               }}
             />
             <PaintingTilt>
@@ -357,7 +357,7 @@ export default function Museum() {
                     aria-hidden
                     style={{
                       background:
-                        "linear-gradient(to top, rgba(0,0,0,0.5), transparent)",
+                        "linear-gradient(to top, color-mix(in srgb, var(--wall) 70%, transparent), transparent)",
                       paddingTop: "2rem",
                     }}
                   >

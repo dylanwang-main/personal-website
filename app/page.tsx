@@ -162,7 +162,7 @@ export default function Home() {
           className="absolute inset-0"
           style={{
             background:
-              "radial-gradient(50% 40% at 50% 40%, rgba(176,152,114,0.06), transparent 70%)",
+              "radial-gradient(50% 40% at 50% 40%, color-mix(in srgb, var(--gold) 6%, transparent), transparent 70%)",
           }}
         />
       </motion.div>

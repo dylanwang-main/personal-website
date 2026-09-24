@@ -58,6 +58,16 @@ export default function DigitalGrid() {
     }
     const rgb = hexToRgb(frameColor);
 
+    // Re-read --frame when theme class changes (light/dark toggle)
+    const observer = new MutationObserver(() => {
+      const newFrame = getComputedStyle(document.documentElement).getPropertyValue("--frame").trim() || "#3d3a36";
+      const newRgb = hexToRgb(newFrame);
+      rgb.r = newRgb.r;
+      rgb.g = newRgb.g;
+      rgb.b = newRgb.b;
+    });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+
     function onMove(e: PointerEvent) {
       mouse.current.x = e.clientX;
       mouse.current.y = e.clientY;
@@ -178,6 +188,7 @@ export default function DigitalGrid() {
 
     return () => {
       cancelAnimationFrame(raf.current);
+      observer.disconnect();
       window.removeEventListener("pointermove", onMove);
       window.removeEventListener("scroll", onScroll);
       document.removeEventListener("mouseleave", onLeave);
