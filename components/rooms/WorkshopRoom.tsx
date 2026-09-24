@@ -1,7 +1,7 @@
 import BackToHall from "@/components/BackToHall";
 import ExhibitBanner from "@/components/ExhibitBanner";
 import Canvas from "@/components/Canvas";
-import OrnateFrame from "@/components/OrnateFrame";
+import Frame from "@/components/Frame";
 import MorphReveal from "@/components/MorphReveal";
 import type { Exhibit } from "@/content/content";
 import { exhibitPage } from "@/content/content";
@@ -67,13 +67,13 @@ export default function WorkshopRoom({ exhibit }: { exhibit: Exhibit }) {
                     "radial-gradient(50% 70% at 50% 0%, rgba(255,255,255,0.04), transparent 70%)",
                 }}
               />
-              <OrnateFrame tone="neutral" scale="slot">
+              <Frame tone="neutral" scale="slot">
                 <Canvas
                   image={primary}
                   sizes="(min-width: 768px) 16rem, 100vw"
                   className="aspect-[4/5] w-full"
                 />
-              </OrnateFrame>
+              </Frame>
               <span className="mt-2 block text-[0.7rem] tracking-[0.12em] text-muted uppercase">
                 {primary.label}
               </span>
@@ -97,25 +97,25 @@ export default function WorkshopRoom({ exhibit }: { exhibit: Exhibit }) {
               >
                 {/* On even rows, image left; on odd rows, image right */}
                 {secondary[i] && i % 2 === 0 && (
-                  <OrnateFrame tone="neutral" scale="slot">
+                  <Frame tone="neutral" scale="slot">
                     <Canvas
                       image={secondary[i]}
                       sizes="10rem"
                       className="aspect-square w-full"
                     />
-                  </OrnateFrame>
+                  </Frame>
                 )}
                 <p className="leading-relaxed text-muted self-center">
                   {paragraph}
                 </p>
                 {secondary[i] && i % 2 !== 0 && (
-                  <OrnateFrame tone="neutral" scale="slot">
+                  <Frame tone="neutral" scale="slot">
                     <Canvas
                       image={secondary[i]}
                       sizes="10rem"
                       className="aspect-square w-full"
                     />
-                  </OrnateFrame>
+                  </Frame>
                 )}
               </div>
             ))}

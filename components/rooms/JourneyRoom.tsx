@@ -1,7 +1,7 @@
 import BackToHall from "@/components/BackToHall";
 import ExhibitBanner from "@/components/ExhibitBanner";
 import Canvas from "@/components/Canvas";
-import OrnateFrame from "@/components/OrnateFrame";
+import Frame from "@/components/Frame";
 import MorphReveal from "@/components/MorphReveal";
 import type { Exhibit } from "@/content/content";
 import { exhibitPage } from "@/content/content";
@@ -67,13 +67,13 @@ export default function JourneyRoom({ exhibit }: { exhibit: Exhibit }) {
                       "radial-gradient(50% 60% at 50% 0%, rgba(255,255,255,0.03), transparent 70%)",
                   }}
                 />
-                <OrnateFrame tone="neutral" scale="slot">
+                <Frame tone="neutral" scale="slot">
                   <Canvas
                     image={image}
                     sizes="(min-width: 768px) 56rem, 100vw"
                     className="aspect-[21/9] w-full"
                   />
-                </OrnateFrame>
+                </Frame>
               </div>
 
               {/* Caption — the journal entry beneath the scene */}

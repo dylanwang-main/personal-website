@@ -13,7 +13,7 @@ import {
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Canvas from "@/components/Canvas";
-import OrnateFrame from "@/components/OrnateFrame";
+import Frame from "@/components/Frame";
 import { beginMorph, frameLayoutId } from "@/components/Morph";
 import { exhibits, hall } from "@/content/content";
 
@@ -334,7 +334,7 @@ export default function Museum() {
               data-cursor="enter"
               className="group block cursor-pointer text-left"
             >
-              <OrnateFrame
+              <Frame
                 tone={exhibit.featured ? "gold" : "neutral"}
                 layoutId={frameLayoutId(exhibit.slug)}
                 name={exhibit.name}
@@ -364,7 +364,7 @@ export default function Museum() {
                     Enter
                   </span>
                 </div>
-              </OrnateFrame>
+              </Frame>
             </Link>
             </PaintingTilt>
           </motion.div>
@@ -424,13 +424,13 @@ export default function Museum() {
                     }}
                     className="relative w-[85vw] max-w-4xl"
                   >
-                    <OrnateFrame tone={exhibit.featured ? "gold" : "neutral"}>
+                    <Frame tone={exhibit.featured ? "gold" : "neutral"}>
                       <Canvas
                         image={exhibit.cover}
                         sizes="85vw"
                         className="aspect-[2/3] w-full md:aspect-[3/2]"
                       />
-                    </OrnateFrame>
+                    </Frame>
                   </motion.div>
                 </motion.div>
               );

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import Canvas from "@/components/Canvas";
-import OrnateFrame from "@/components/OrnateFrame";
+import Frame from "@/components/Frame";
 import { frameLayoutId, pendingMorph } from "@/components/Morph";
 import type { Exhibit } from "@/content/content";
 
@@ -48,7 +48,7 @@ export default function ExhibitBanner({
           : { duration: 0 }
       }
     >
-      <OrnateFrame
+      <Frame
         tone={exhibit.featured ? "gold" : "neutral"}
         layoutId={slam ? undefined : frameLayoutId(exhibit.slug)}
       >
@@ -58,7 +58,7 @@ export default function ExhibitBanner({
           className="w-full"
           style={{ height: "clamp(200px, 40svh, 400px)" }}
         />
-      </OrnateFrame>
+      </Frame>
     </motion.div>
   );
 }

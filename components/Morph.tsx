@@ -1,7 +1,7 @@
 /**
  * Walking into a painting: the framed canvas in the hall and the banner at the
  * top of an exhibit page are one object, and the move between them is a framer
- * shared layout animation — both sides render an <OrnateFrame layoutId={...}>
+ * shared layout animation — both sides render a <Frame layoutId={...}>
  * carrying the same id, and framer interpolates the box across the route change.
  *
  * That works without any coordination, so nothing here performs the morph. This

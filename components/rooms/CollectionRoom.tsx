@@ -1,7 +1,7 @@
 import BackToHall from "@/components/BackToHall";
 import ExhibitBanner from "@/components/ExhibitBanner";
 import Canvas from "@/components/Canvas";
-import OrnateFrame from "@/components/OrnateFrame";
+import Frame from "@/components/Frame";
 import MorphReveal from "@/components/MorphReveal";
 import type { Exhibit } from "@/content/content";
 import { exhibitPage } from "@/content/content";
@@ -72,13 +72,13 @@ export default function CollectionRoom({ exhibit }: { exhibit: Exhibit }) {
                         "radial-gradient(50% 70% at 50% 0%, rgba(255,255,255,0.03), transparent 70%)",
                     }}
                   />
-                  <OrnateFrame tone="neutral" scale="slot">
+                  <Frame tone="neutral" scale="slot">
                     <Canvas
                       image={image}
                       sizes="(min-width: 768px) 50vw, 100vw"
                       className="aspect-[4/3] w-full"
                     />
-                  </OrnateFrame>
+                  </Frame>
                   <span className="mt-2 block text-[0.7rem] tracking-[0.12em] text-muted uppercase">
                     {image.label}
                   </span>

@@ -140,19 +140,19 @@ export const nav = {
  */
 export const footer = {
   credit: "DYLAN WANG",
-  note: "Built by hand.",
+  note: "No templates.",
   links: [
-    { label: "LinkedIn", href: "#" },
-    { label: "Instagram", href: "#" },
-    { label: "TikTok", href: "#" },
-    { label: "YouTube", href: "#" },
+    { label: "LinkedIn", href: "https://www.linkedin.com/in/dylanzhwang" },
+    { label: "Instagram", href: "https://instagram.com/dylanwang.main" },
+    { label: "TikTok", href: "https://tiktok.com/@dylanwang_main" },
+    { label: "YouTube", href: "https://youtube.com/@dylanzhwang" },
   ],
-  contact: { label: "Say hello", href: "mailto:hello@example.com" },
+  contact: { label: "Say hello", href: "mailto:dylanzhwang@gmail.com" },
 };
 
 export const hall = {
   heading: "Main Hall",
-  subtitle: "Pick a wall.",
+  subtitle: "",
   exitLabel: "Exit the Museum",
 };
 
@@ -179,8 +179,8 @@ export const featuredExhibitPage = {
 
 export const exitScreen = {
   heading: "Thanks for stopping by",
-  body: "If anything here caught your eye, say hi.",
-  returnLabel: "Go back",
+  body: "I'm always building something. Let's talk.",
+  returnLabel: "Back inside",
 };
 
 /**

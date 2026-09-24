@@ -31,24 +31,14 @@ export default function SiteFooter() {
         <ul className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-muted/60">
           {footer.links.map((link) => (
             <li key={link.label}>
-              {link.href === "#" ? (
-                <span
-                  className="cursor-default"
-                  aria-disabled="true"
-                  title="Coming soon"
-                >
-                  {link.label}
-                </span>
-              ) : (
-                <a
-                  href={link.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="transition-colors hover:text-ink"
-                >
-                  {link.label}
-                </a>
-              )}
+              <a
+                href={link.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="transition-colors hover:text-ink"
+              >
+                {link.label}
+              </a>
             </li>
           ))}
           <li aria-hidden className="mx-1 h-3 w-px bg-frame/30" />

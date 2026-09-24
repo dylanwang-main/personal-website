@@ -8,7 +8,7 @@ const scales = {
   slot: { padding: "p-1.5" },
 } as const;
 
-export default function OrnateFrame({
+export default function Frame({
   tone,
   scale = "wall",
   layoutId,

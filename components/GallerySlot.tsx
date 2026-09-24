@@ -1,5 +1,5 @@
 import Canvas from "@/components/Canvas";
-import OrnateFrame from "@/components/OrnateFrame";
+import Frame from "@/components/Frame";
 import type { ExhibitImage } from "@/content/content";
 
 /**
@@ -39,9 +39,9 @@ export default function GallerySlot({
 }) {
   return (
     <figure className="flex flex-col">
-      <OrnateFrame tone={tone} scale="slot">
+      <Frame tone={tone} scale="slot">
         <Canvas image={image} sizes={sizes} className={`w-full ${ratio}`} />
-      </OrnateFrame>
+      </Frame>
 
       <figcaption className="mt-3 flex flex-col gap-1 pt-2">
         <span

@@ -3,13 +3,9 @@
 import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 import ExitGlow from "@/components/ExitGlow";
-import { exitScreen } from "@/content/content";
+import Canvas from "@/components/Canvas";
+import { exitScreen, entrance, footer } from "@/content/content";
 
-/**
- * The exit — the bookend. Content stages in sequence: glow breathes first,
- * then heading, body, and the return link arrive one by one. The pacing is
- * slow enough to read as a closing moment, not as a loading delay.
- */
 export default function Exit() {
   const reduceMotion = useReducedMotion();
 
@@ -32,17 +28,58 @@ export default function Exit() {
 
   return (
     <motion.main
-      className="relative flex flex-1 flex-col items-center justify-center gap-6 px-6 py-16 text-center text-ink"
+      className="relative flex flex-1 flex-col items-center justify-center gap-8 px-6 py-16 text-center text-ink"
       style={{ background: "var(--wall)" }}
       {...stagger}
     >
       <ExitGlow />
+
+      {/* Portrait */}
+      <motion.div className="relative" {...item}>
+        <Canvas
+          image={{ src: entrance.image, label: entrance.imagePlaceholder }}
+          sizes="7rem"
+          className="h-28 w-28 rounded-full border border-frame object-cover"
+        />
+      </motion.div>
+
       <motion.h1 className="relative text-3xl" {...item}>
         {exitScreen.heading}
       </motion.h1>
       <motion.p className="relative max-w-md text-muted" {...item}>
         {exitScreen.body}
       </motion.p>
+
+      {/* Social links */}
+      <motion.ul
+        className="relative flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-sm text-muted"
+        {...item}
+      >
+        {footer.links.map((link) => (
+          <li key={link.label}>
+            <a
+              href={link.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="transition-colors hover:text-ink"
+            >
+              {link.label}
+            </a>
+          </li>
+        ))}
+      </motion.ul>
+
+      {/* Contact */}
+      <motion.div {...item}>
+        <a
+          href={footer.contact.href}
+          data-cursor="say hello"
+          className="text-sm text-muted transition-colors hover:text-ink"
+        >
+          {footer.contact.label}
+        </a>
+      </motion.div>
+
       <motion.div {...item}>
         <Link
           href="/"
