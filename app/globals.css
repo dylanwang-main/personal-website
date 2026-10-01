@@ -35,6 +35,10 @@
   --gold-deep: #6d5c42;
 }
 
+/* `light:` variant, for the few places the two themes need different
+   materials rather than different token values (see SpotlightReveal). */
+@custom-variant light (&:where(.light, .light *));
+
 @theme inline {
   --color-wall: var(--wall);
   --color-panel: var(--panel);
@@ -102,8 +106,9 @@ h1 {
 }
 
 :focus-visible {
-  outline: 2px solid var(--gold-deep);
-  outline-offset: 2px;
+  /* Ink, not gold: gold is reserved for the featured frame. */
+  outline: 2px solid color-mix(in srgb, var(--ink) 70%, transparent);
+  outline-offset: 3px;
 }
 
 /* Reduced motion: kill CSS transitions and animations the JS gate does not

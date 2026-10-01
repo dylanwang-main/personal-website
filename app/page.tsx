@@ -3,13 +3,13 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion, useTransform } from "framer-motion";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import Canvas from "@/components/Canvas";
 import Doorway from "@/components/Doorway";
 import Frame from "@/components/Frame";
-import GlassReveal from "@/components/GlassReveal";
 import KineticTagline from "@/components/KineticTagline";
 import Placard from "@/components/Placard";
+import RoomDoor from "@/components/RoomDoor";
+import SpotlightReveal, { Spotlight } from "@/components/SpotlightReveal";
 import { NAME_SIZE } from "@/lib/motion";
 import { useCursorParallax } from "@/lib/useCursorParallax";
 import { entrance, exhibits } from "@/content/content";
@@ -26,9 +26,10 @@ const INK_DURATION = 0.65;
  * the door; below it, the visitor's own portrait hangs as the first work in the
  * museum, with the bio as its wall text and the rooms beyond it.
  *
- * Nothing here is gated. The portrait sits behind display-case glass that clears
- * as it scrolls into view (GlassReveal), and every room is one click away, but
- * the door and its ink dissolve stay the main way in.
+ * Nothing here is gated. The portrait is revealed as it scrolls into view — a
+ * gallery lamp coming up in the dark theme, display-case glass clearing in the
+ * light one (SpotlightReveal) — and every room has its own small door, but the
+ * main door and its ink dissolve stay the way in.
  */
 export default function Home() {
   const router = useRouter();
@@ -163,10 +164,10 @@ export default function Home() {
       </motion.div>
 
       <div className="relative z-10 flex flex-1 flex-col">
-        {/* Title sequence. Most of the viewport: the name and the door, with
-            the top edge of the portrait's wall just showing beneath. */}
+        {/* Title sequence. Most of the viewport: the name and the door, short
+            enough that the top of the portrait's frame shows above the fold. */}
         <section
-          className="relative flex min-h-[85svh] flex-col items-center justify-center px-6 pb-16"
+          className="relative flex min-h-[78svh] flex-col items-center justify-center px-6 pb-14"
           style={{ gap: "clamp(32px, 6vh, 64px)" }}
         >
           {/* Name: on enter, the SVG displacement filter warps the letterforms
@@ -250,12 +251,13 @@ export default function Home() {
           animate={entering ? { opacity: 0 } : { opacity: 1 }}
           transition={entering ? { duration: 0.4, ease: "easeIn" } : { duration: 0 }}
         >
-          <GlassReveal className="mx-auto w-full max-w-5xl px-6 pt-8 pb-28">
+          <SpotlightReveal className="mx-auto w-full max-w-5xl px-6 pt-10 pb-28">
             <section
               aria-labelledby="about-heading"
               className="grid grid-cols-1 items-center gap-12 md:grid-cols-[minmax(0,22rem)_minmax(0,1fr)] md:gap-16"
             >
-              <div className="mx-auto w-full max-w-[20rem] md:max-w-none">
+              <div className="relative isolate mx-auto w-full max-w-[20rem] md:max-w-none">
+                <Spotlight />
                 <Frame tone="neutral">
                   <Canvas
                     image={{ src: entrance.image, label: entrance.imagePlaceholder }}
@@ -303,7 +305,7 @@ export default function Home() {
                 </p>
               </div>
             </section>
-          </GlassReveal>
+          </SpotlightReveal>
 
           {/* The rooms beyond: each teaser is a way straight in. */}
           <section
@@ -323,16 +325,13 @@ export default function Home() {
               <p className="text-sm text-muted">{entrance.roomsNote}</p>
             </div>
 
-            <ul className="grid grid-cols-[repeat(auto-fit,minmax(9.5rem,1fr))] gap-x-8 gap-y-6">
+            {/* A row of doors. On a phone it scrolls sideways rather than
+                wrapping, so no room is left alone on a row of its own; the door
+                cut off at the edge is the cue that there are more. */}
+            <ul className="-mx-6 flex snap-x snap-mandatory scroll-px-6 gap-8 overflow-x-auto px-6 pt-3 pb-4 md:mx-0 md:grid md:grid-cols-[repeat(auto-fit,minmax(7.5rem,1fr))] md:gap-x-6 md:overflow-visible md:px-0">
               {exhibits.map((exhibit) => (
-                <li key={exhibit.slug} className="flex">
-                  <Link
-                    href={`/museum/${exhibit.slug}`}
-                    data-cursor="view"
-                    className="group flex-1"
-                  >
-                    <Placard label={exhibit.name} value={exhibit.teaser} linked />
-                  </Link>
+                <li key={exhibit.slug} className="flex shrink-0 snap-start justify-center">
+                  <RoomDoor exhibit={exhibit} />
                 </li>
               ))}
             </ul>

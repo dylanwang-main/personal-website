@@ -1,15 +1,18 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { EntrancePaifang, plaqueStyle } from "@/components/Paifang";
 
 /**
- * The way in, drawn as a door casing rather than a button: two posts, a lintel
- * that runs a little past them the way an architrave does, and a sill line on
- * the floor. The bottom stays open — it is a doorway, not a box.
+ * The way in: a paifang, the ceremonial gateway, with the word on its name
+ * plaque. The rooms further down have small gates of the same architecture;
+ * this one outranks them by its second roof, its plaque and its size, not by
+ * ornament.
  *
- * The casing lines are ink at 55%, which clears 3:1 against the wall in both
- * themes (WCAG 1.4.11). The label is full ink: this is the primary action, so
- * nothing in the hero, the header included, should outrank it.
+ * The label is full ink: this is the primary action, so nothing in the hero,
+ * the header included, should outrank it. No `data-cursor` label — the gate
+ * already says what it does, and a second "Enter" from the cursor sat on top of
+ * the first.
  */
 export default function Doorway({
   label,
@@ -17,12 +20,12 @@ export default function Doorway({
   onEnter,
   leaving,
 }: {
-  /** Visible word inside the door. */
+  /** Visible word on the plaque. */
   label: string;
   /** Accessible name. Must contain `label`, so voice control matches it. */
   accessibleLabel: string;
   onEnter: () => void;
-  /** True once the ink dissolve has started; the door steps back out of it. */
+  /** True once the ink dissolve has started; the gate steps back out of it. */
   leaving: boolean;
 }) {
   return (
@@ -31,54 +34,18 @@ export default function Doorway({
       onClick={onEnter}
       disabled={leaving}
       aria-label={accessibleLabel}
-      data-cursor="enter"
-      className="group relative px-12 pt-9 pb-5 font-display text-base tracking-[0.18em] text-ink uppercase"
+      className="group relative aspect-[200/166] focus-visible:outline-none"
+      style={{ width: "clamp(11rem, 14vw, 12.5rem)" }}
       animate={leaving ? { opacity: 0, y: 8 } : { opacity: 1, y: 0 }}
       transition={leaving ? { duration: 0.2, ease: "easeIn" } : { duration: 0.2 }}
     >
-      {/* Lintel: overhangs the posts, with a second, fainter line under it for
-          the step in the moulding. */}
+      <EntrancePaifang />
       <span
-        aria-hidden
-        className="absolute -inset-x-2 top-0 h-px bg-ink/55 transition-colors duration-300 group-hover:bg-ink"
-      />
-      <span
-        aria-hidden
-        className="absolute inset-x-0 top-[5px] h-px bg-ink/25 transition-colors duration-300 group-hover:bg-ink/55"
-      />
-
-      {/* Posts */}
-      <span
-        aria-hidden
-        className="absolute top-0 bottom-0 left-0 w-px bg-ink/55 transition-colors duration-300 group-hover:bg-ink"
-      />
-      <span
-        aria-hidden
-        className="absolute top-0 right-0 bottom-0 w-px bg-ink/55 transition-colors duration-300 group-hover:bg-ink"
-      />
-
-      {/* Sill: the floor line the door stands on, fading out at both ends. */}
-      <span
-        aria-hidden
-        className="absolute -inset-x-8 bottom-0 h-px"
-        style={{
-          background:
-            "linear-gradient(90deg, transparent, color-mix(in srgb, var(--ink) 40%, transparent) 25%, color-mix(in srgb, var(--ink) 40%, transparent) 75%, transparent)",
-        }}
-      />
-
-      {/* Light from inside the room: a faint wash that rises on hover, so the
-          door reads as opening onto somewhere lit. */}
-      <span
-        aria-hidden
-        className="absolute inset-px opacity-0 transition-opacity duration-500 group-hover:opacity-100"
-        style={{
-          background:
-            "linear-gradient(to top, color-mix(in srgb, var(--ink) 9%, transparent), transparent 85%)",
-        }}
-      />
-
-      <span className="relative">{label}</span>
+        className="absolute flex items-center justify-center font-display text-sm tracking-[0.16em] text-ink uppercase"
+        style={plaqueStyle}
+      >
+        {label}
+      </span>
     </motion.button>
   );
 }

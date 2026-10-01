@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Analytics } from "@vercel/analytics/next";
 import { Cormorant_Garamond, Raleway } from "next/font/google";
+import Script from "next/script";
 import ArrivalCurtain from "@/components/ArrivalCurtain";
 import CustomCursor from "@/components/CustomCursor";
 import DigitalGrid from "@/components/DigitalGrid";
@@ -63,16 +64,20 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${cormorantGaramond.variable} ${raleway.variable} h-full antialiased`}
-      // The theme init script adds `dark` before hydration, so the class list
+      // The theme init script adds `light` before hydration, so the class list
       // legitimately differs from the server's.
       suppressHydrationWarning
     >
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
-      </head>
       {/* pt-14 clears the fixed header, which overlays content rather than
           pushing it down. */}
       <body className="flex min-h-full flex-col bg-wall pt-14 text-ink">
+        {/* Through next/script rather than a raw <script> in <head>: React
+            warns about script tags rendered by components, and
+            beforeInteractive still runs it ahead of hydration, so the light
+            theme lands before first paint. */}
+        <Script id="theme-init" strategy="beforeInteractive">
+          {themeInitScript}
+        </Script>
         {/* Outside PageTransition on purpose — it is a full-viewport overlay,
             and PageTransition's transform would trap it. See ArrivalCurtain. */}
         <DigitalGrid />

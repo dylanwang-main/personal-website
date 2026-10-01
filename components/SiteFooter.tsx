@@ -41,8 +41,10 @@ export default function SiteFooter() {
               </a>
             </li>
           ))}
-          <li aria-hidden className="mx-1 h-3 w-px bg-frame/30" />
-          <li>
+          {/* Below sm the contact takes its own line on purpose, rather than
+              wrapping alone after the divider. */}
+          <li aria-hidden className="mx-1 hidden h-3 w-px bg-frame/30 sm:block" />
+          <li className="basis-full sm:basis-auto">
             <a
               href={footer.contact.href}
               data-cursor="say hello"

@@ -112,7 +112,7 @@ export default function Canvas({
                 "linear-gradient(90deg, transparent, var(--frame), transparent)",
             }}
           />
-          <span className="font-display text-sm text-muted italic">
+          <span className="font-display text-sm text-muted italic light:text-ink/70">
             {image.label}
           </span>
           <span
