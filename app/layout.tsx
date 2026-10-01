@@ -11,13 +11,13 @@ import { site } from "@/content/content";
 import "./globals.css";
 
 const cormorantGaramond = Cormorant_Garamond({
-  variable: "--font-cinzel",
+  variable: "--font-display-face",
   subsets: ["latin"],
   weight: ["400", "600", "700"],
 });
 
 const raleway = Raleway({
-  variable: "--font-raleway",
+  variable: "--font-body-face",
   subsets: ["latin"],
 });
 

@@ -49,7 +49,13 @@ export default function KineticTagline({ phrases }: { phrases: string[] }) {
               opacity: current ? 1 : 0,
               y: current ? 0 : i < index ? -6 : 6,
             }}
-            transition={{ duration: TAGLINE_FADE, ease: "easeInOut" }}
+            // The outgoing phrase clears before the incoming one lands, so the
+            // two never sit on top of each other mid-swap.
+            transition={
+              current
+                ? { duration: TAGLINE_FADE, delay: TAGLINE_FADE * 0.5, ease: "easeOut" }
+                : { duration: TAGLINE_FADE * 0.6, ease: "easeIn" }
+            }
           >
             {phrase}
           </motion.span>

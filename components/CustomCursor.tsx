@@ -90,11 +90,10 @@ export default function CustomCursor() {
       <motion.div
         className="absolute rounded-full bg-gold"
         style={{
-          width: 9,
-          height: 9,
-          top: -4.5,
-          left: -4.5,
-          boxShadow: "0 0 6px color-mix(in srgb, var(--gold) 40%, transparent)",
+          width: 6,
+          height: 6,
+          top: -3,
+          left: -3,
         }}
         animate={pressed ? { scale: 0.55 } : { scale: 1 }}
         transition={
@@ -111,13 +110,13 @@ export default function CustomCursor() {
             key={ripple}
             className="absolute rounded-full border border-gold/60"
             style={{
-              width: 9,
-              height: 9,
-              top: -4.5,
-              left: -4.5,
+              width: 6,
+              height: 6,
+              top: -3,
+              left: -3,
             }}
-            initial={{ scale: 1, opacity: 0.7 }}
-            animate={{ scale: 4, opacity: 0 }}
+            initial={{ scale: 1, opacity: 0.6 }}
+            animate={{ scale: 5, opacity: 0 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
           />
@@ -126,7 +125,7 @@ export default function CustomCursor() {
 
       {/* Contextual label */}
       <motion.span
-        className="absolute left-5 top-[-0.45rem] whitespace-nowrap font-display text-[0.65rem] tracking-[0.08em] text-gold uppercase"
+        className="absolute left-4 top-[-0.45rem] whitespace-nowrap font-display text-[0.72rem] tracking-[0.08em] text-gold uppercase"
         initial={false}
         animate={{
           opacity: label ? 1 : 0,

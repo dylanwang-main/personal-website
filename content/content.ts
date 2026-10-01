@@ -41,7 +41,7 @@ export type Exhibit = {
   /**
    * A few words for the teaser placards on the entrance page. Shorter than
    * `subtitle` on purpose — the strip is read on the way past the door, not
-   * studied, and these are not links.
+   * studied.
    */
   teaser: string;
   /**
@@ -84,32 +84,42 @@ export const entrance = {
     "Placeholder focus three",
   ],
   heading: "About Me",
-  body: "Placeholder paragraph about me. This space will eventually hold a short introduction, a bit of background, and whatever else feels worth sharing before stepping into the museum.",
+  /**
+   * The wall text beside the portrait, one string per paragraph. Set at a
+   * readable measure, so two or three short paragraphs read better than one long
+   * one.
+   */
+  body: [
+    "Placeholder paragraph about me. This space will eventually hold a short introduction, a bit of background, and whatever else feels worth sharing before stepping into the museum.",
+    "Placeholder second paragraph. A little more on how the work gets done and what tends to pull attention, kept short enough to read standing up.",
+  ],
   /** Status line under the bio. Expected to be edited often, so it stands alone. */
   currentlyLabel: "Currently",
   currently:
     "Placeholder status line — what is being worked on right now, dated so a stale line is obvious.",
   /**
-   * Museum wall placards: a short label over a short value. Kept to three —
-   * these are meant to be read in one pass on the way past, not studied.
+   * The portrait's object label: short label / value lines, the way a museum
+   * card lists medium and dates. Any count lays out; two to four read best.
+   * What is being worked on now lives in `currently` above, not here.
    */
   placards: [
     { label: "Based in", value: "Placeholder city" },
-    { label: "Working on", value: "Placeholder focus" },
     { label: "Open to", value: "Placeholder availability" },
   ],
   /** Path under /public for the portrait. Empty = placeholder box */
   image: "",
   imagePlaceholder: "Photo",
   /**
-   * The teaser strip near the foot of the entrance. Deliberately not links —
-   * the door is the only way in, and this is the view of the rooms from outside
-   * it. Copy comes from each exhibit's `teaser`, so the strip cannot list a room
+   * The teaser strip near the foot of the entrance. Each teaser links straight
+   * into its room, a shortcut past the door for visitors who know what they came
+   * for. Copy comes from each exhibit's `teaser`, so the strip cannot list a room
    * the museum does not have.
    */
   roomsLabel: "Behind the door",
   roomsNote: "Five rooms inside.",
-  /** Accessible name for the enter button */
+  /** The word inside the door. */
+  doorText: "Enter",
+  /** Accessible name for the door. Must contain `doorText`. */
   doorLabel: "Enter the museum",
 };
 

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import ThemeToggle from "@/components/ThemeToggle";
 import FloorPlan from "@/components/FloorPlan";
 import { nav } from "@/content/content";
@@ -21,6 +22,9 @@ import { nav } from "@/content/content";
  */
 export default function SiteHeader() {
   const [floorPlanOpen, setFloorPlanOpen] = useState(false);
+  // On the entrance the name is already the hero, so the header's copy of it
+  // steps back rather than repeating it at full strength.
+  const atEntrance = usePathname() === "/";
 
   return (
     <>
@@ -32,7 +36,10 @@ export default function SiteHeader() {
           <Link
             href="/"
             data-cursor="home"
-            className="font-display text-sm whitespace-nowrap text-ink"
+            aria-current={atEntrance ? "page" : undefined}
+            className={`font-display text-sm whitespace-nowrap transition-colors ${
+              atEntrance ? "text-muted hover:text-ink" : "text-ink"
+            }`}
           >
             {nav.homeLabel}
           </Link>

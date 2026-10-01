@@ -19,9 +19,17 @@ import type { ExhibitImage } from "@/content/content";
 const thread = "color-mix(in srgb, var(--ink) 7%, transparent)";
 const weave = [
   "radial-gradient(120% 90% at 50% 0%, rgba(255,255,255,0.07), transparent 62%)",
-  `repeating-linear-gradient(0deg, ${thread} 0 1px, transparent 1px 3px)`,
-  `repeating-linear-gradient(90deg, ${thread} 0 1px, transparent 1px 3px)`,
+  `linear-gradient(0deg, ${thread} 1px, transparent 1px)`,
+  `linear-gradient(90deg, ${thread} 1px, transparent 1px)`,
 ].join(", ");
+/**
+ * The threads are drawn as one line per 3px tile rather than as a repeating
+ * gradient. A repeating gradient is rasterised across the whole box, so on a
+ * canvas whose size lands on a half pixel (a 4:5 slot 330px wide is 412.5px
+ * tall) the 1px lines round in and out of alignment and beat into large moiré
+ * shapes. Tiles are each rounded the same way, so the weave stays even.
+ */
+const weaveSize = "100% 100%, 3px 3px, 3px 3px";
 
 /**
  * A stretched canvas: the artwork, or the canvas waiting for it.
@@ -70,6 +78,7 @@ export default function Canvas({
       className={`relative flex items-center justify-center overflow-hidden bg-panel ${className}`}
       style={{
         backgroundImage: image.src ? undefined : weave,
+        backgroundSize: image.src ? undefined : weaveSize,
         boxShadow: "inset 0 2px 12px rgba(0,0,0,0.3)",
         ...style,
       }}

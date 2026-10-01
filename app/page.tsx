@@ -3,9 +3,14 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion, useTransform } from "framer-motion";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import Canvas from "@/components/Canvas";
+import Doorway from "@/components/Doorway";
+import Frame from "@/components/Frame";
+import GlassReveal from "@/components/GlassReveal";
 import KineticTagline from "@/components/KineticTagline";
 import Placard from "@/components/Placard";
+import { NAME_SIZE } from "@/lib/motion";
 import { useCursorParallax } from "@/lib/useCursorParallax";
 import { entrance, exhibits } from "@/content/content";
 
@@ -17,18 +22,19 @@ import { entrance, exhibits } from "@/content/content";
 const INK_DURATION = 0.65;
 
 /**
- * The entrance. A lobby with a gate: the title sequence fills the viewport and
- * the Enter button is the only action. Below it, the bio and room teasers are
- * visible but scroll is locked until the visitor clicks Enter. This makes
- * Enter mandatory — the lobby content is a through-the-glass preview, not a
- * bypass. Once the iris fires, the visitor is pushed into the hall.
+ * The entrance. The title sequence fills most of the viewport with the name and
+ * the door; below it, the visitor's own portrait hangs as the first work in the
+ * museum, with the bio as its wall text and the rooms beyond it.
+ *
+ * Nothing here is gated. The portrait sits behind display-case glass that clears
+ * as it scrolls into view (GlassReveal), and every room is one click away, but
+ * the door and its ink dissolve stay the main way in.
  */
 export default function Home() {
   const router = useRouter();
   const reduceMotion = useReducedMotion();
   const navigated = useRef(false);
   const [entering, setEntering] = useState(false);
-  const [entered, setEntered] = useState(false);
 
   const { nx, ny } = useCursorParallax();
   const heroX = useTransform(nx, (v) => v * 4);
@@ -68,25 +74,14 @@ export default function Home() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [entering]);
 
-  /* Check if visitor already entered this session (back from museum). */
-  useEffect(() => {
-    try {
-      if (sessionStorage.getItem("museum-entered")) setEntered(true);
-    } catch {
-      /* SSR or restricted storage — stay gated */
-    }
-  }, []);
-
-  /* Record entry so returning visitors see the lobby unlocked. */
+  /* Mark the dissolve as played, so it runs once per session. */
   useEffect(() => {
     if (!entering) return;
     try {
-      sessionStorage.setItem("museum-entered", "1");
       sessionStorage.setItem("ink-played", "1");
     } catch {
       /* noop */
     }
-    setEntered(true);
   }, [entering]);
 
   /**
@@ -168,23 +163,23 @@ export default function Home() {
       </motion.div>
 
       <div className="relative z-10 flex flex-1 flex-col">
-        {/* Title sequence. Full viewport. The name is the only thing. */}
+        {/* Title sequence. Most of the viewport: the name and the door, with
+            the top edge of the portrait's wall just showing beneath. */}
         <section
-          className="flex min-h-[calc(100svh-8rem)] flex-col items-center justify-center px-6"
-          style={{ gap: "clamp(24px, 5vh, 56px)" }}
+          className="relative flex min-h-[85svh] flex-col items-center justify-center px-6 pb-16"
+          style={{ gap: "clamp(32px, 6vh, 64px)" }}
         >
           {/* Name: on enter, the SVG displacement filter warps the letterforms
               into organic tendrils while the text scales up slightly and fades.
-              The tendrils are visible for about a second before dissolving —
-              the name IS the ink. */}
+              The name IS the ink. */}
           <motion.div
             className="flex flex-col items-center"
             style={{ x: heroX, y: heroY, gap: "clamp(12px, 2vh, 20px)" }}
           >
             <motion.h1
-              className="text-center font-display leading-[0.9] tracking-tight"
+              className="text-center font-display leading-[0.9] tracking-tight text-balance"
               style={{
-                fontSize: "clamp(2.8rem, 10vw, 7.5rem)",
+                fontSize: NAME_SIZE,
                 filter: entering ? "url(#ink-dissolve)" : "none",
                 willChange: entering ? "filter, transform, opacity" : "auto",
               }}
@@ -210,140 +205,138 @@ export default function Home() {
             </motion.h1>
 
             {/* Tagline drops away fast — it's not part of the ink moment. */}
-            <motion.div
-              animate={entering ? { opacity: 0, y: 10 } : { opacity: 1, y: 0 }}
-              transition={entering ? { duration: 0.25, ease: "easeIn" } : { duration: 0.2 }}
-            >
-              <KineticTagline phrases={entrance.taglines} />
-            </motion.div>
+            {entrance.taglines.length > 0 && (
+              <motion.div
+                animate={entering ? { opacity: 0, y: 10 } : { opacity: 1, y: 0 }}
+                transition={entering ? { duration: 0.25, ease: "easeIn" } : { duration: 0.2 }}
+              >
+                <KineticTagline phrases={entrance.taglines} />
+              </motion.div>
+            )}
           </motion.div>
 
-          {/* Enter — the only action. Minimal, gold-accented. A breathing
-              box-shadow glow beckons on idle; hover sharpens the glow. */}
-          <motion.button
-            type="button"
-            onClick={enterMuseum}
-            disabled={entering}
-            aria-label={entrance.doorLabel}
-            data-cursor="enter"
-            className="rounded border border-frame px-8 py-3 font-display text-sm tracking-[0.08em] text-muted uppercase transition-[border-color,color] hover:border-ink hover:text-ink"
-            animate={
-              entering ? { opacity: 0, y: 8 } : { opacity: 1, y: 0 }
-            }
-            transition={
-              entering ? { duration: 0.2, ease: "easeIn" } : { duration: 0.2 }
-            }
-          >
-            Enter
-          </motion.button>
+          <Doorway
+            label={entrance.doorText}
+            accessibleLabel={entrance.doorLabel}
+            onEnter={enterMuseum}
+            leaving={entering}
+          />
 
-          {/* Scroll hint — only when lobby is still gated. A slow vertical
-              bob rather than a pulse: the arrow is beckoning, not blinking. */}
-          {!entered && !entering && (
-            <motion.p
-              className="mt-4 text-xs text-muted/40"
-              initial={{ y: 0, opacity: 0 }}
-              animate={{ y: [0, 6, 0], opacity: [0.4, 0.7, 0.4] }}
-              transition={{
-                duration: 2.4,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
+          {/* Scroll cue, pinned to the foot of the title sequence so it marks
+              the fold rather than floating under the door. A slow bob, held
+              still under reduced motion. */}
+          {!entering && (
+            <motion.svg
+              aria-hidden
+              viewBox="0 0 16 24"
+              className="absolute bottom-6 left-1/2 h-6 w-4 -translate-x-1/2 text-muted"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={1}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              animate={reduceMotion ? undefined : { y: [0, 5, 0] }}
+              transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
             >
-              ↓
-            </motion.p>
+              <path d="M8 2v19M3 16l5 5 5-5" />
+            </motion.svg>
           )}
         </section>
 
-        {/* Bio — the placard wall below the title sequence.
-            Gated: content is visible but non-interactive until Enter has been
-            clicked at least once this session. A frosted veil and pointer-events
-            lock communicate "this is behind the glass." The veil lifts with a
-            CSS transition so the unlock reads as the glass being removed rather
-            than a boolean flip.
-
-            On enter, fades quietly — the ink overlay is what covers it. */}
+        {/* The first work: the portrait, hung in the same frame as the hall's
+            paintings, with its object label and wall text beside it. On enter
+            it fades quietly — the ink overlay is what covers it. */}
         <motion.div
-          className="relative"
           animate={entering ? { opacity: 0 } : { opacity: 1 }}
           transition={entering ? { duration: 0.4, ease: "easeIn" } : { duration: 0 }}
         >
-          <div
-            className={`pointer-events-auto absolute inset-0 z-20 transition-opacity duration-700 ease-out ${
-              entered ? "pointer-events-none opacity-0" : "opacity-100"
-            }`}
-            aria-hidden
-            style={{
-              background:
-                "linear-gradient(to bottom, var(--wall), transparent 40%)",
-              maskImage:
-                "linear-gradient(to bottom, black 30%, transparent)",
-              WebkitMaskImage:
-                "linear-gradient(to bottom, black 30%, transparent)",
-            }}
-          />
-          <div
-            className={`transition-opacity duration-700 ease-out ${
-              entered
-                ? "opacity-100"
-                : "pointer-events-none select-none opacity-40"
-            }`}
-          >
-            <section className="mx-auto grid w-full max-w-5xl grid-cols-1 gap-10 px-6 pt-4 pb-24 md:grid-cols-[minmax(0,20rem)_minmax(0,1fr)] md:gap-14">
-              <Canvas
-                image={{ src: entrance.image, label: entrance.imagePlaceholder }}
-                sizes="(min-width: 768px) 20rem, 18rem"
-                className="aspect-[4/5] w-full max-w-[18rem] justify-self-center border border-frame md:max-w-none md:justify-self-stretch"
-              />
+          <GlassReveal className="mx-auto w-full max-w-5xl px-6 pt-8 pb-28">
+            <section
+              aria-labelledby="about-heading"
+              className="grid grid-cols-1 items-center gap-12 md:grid-cols-[minmax(0,22rem)_minmax(0,1fr)] md:gap-16"
+            >
+              <div className="mx-auto w-full max-w-[20rem] md:max-w-none">
+                <Frame tone="neutral">
+                  <Canvas
+                    image={{ src: entrance.image, label: entrance.imagePlaceholder }}
+                    sizes="(min-width: 768px) 22rem, 20rem"
+                    className="aspect-[4/5] w-full"
+                  />
+                </Frame>
+              </div>
 
-              <div className="flex flex-col gap-8">
-                <div className="flex flex-col gap-4">
-                  <h2 className="text-2xl md:text-3xl">{entrance.heading}</h2>
-                  <p className="leading-relaxed text-muted">{entrance.body}</p>
+              <div className="flex flex-col gap-10">
+                {/* Object label: the card beside the work. */}
+                <div className="flex flex-col gap-5">
+                  <h2
+                    id="about-heading"
+                    className="text-3xl leading-tight text-balance md:text-4xl"
+                  >
+                    {entrance.heading}
+                  </h2>
+                  {entrance.placards.length > 0 && (
+                    <dl className="grid grid-cols-[repeat(auto-fit,minmax(9rem,1fr))] gap-x-8 gap-y-5">
+                      {entrance.placards.map((placard) => (
+                        <Placard
+                          key={placard.label}
+                          definition
+                          label={placard.label}
+                          value={placard.value}
+                        />
+                      ))}
+                    </dl>
+                  )}
                 </div>
 
-                <p className="text-sm text-muted">
-                  <span
-                    className="tracking-[0.1em] uppercase"
-                    style={{ color: "var(--muted)" }}
-                  >
-                    {entrance.currentlyLabel}
-                  </span>{" "}
-                  — {entrance.currently}
-                </p>
-
-                <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
-                  {entrance.placards.map((placard) => (
-                    <Placard
-                      key={placard.label}
-                      label={placard.label}
-                      value={placard.value}
-                    />
+                {/* Wall text */}
+                <div className="flex max-w-[65ch] flex-col gap-4 leading-relaxed text-muted">
+                  {entrance.body.map((paragraph) => (
+                    <p key={paragraph}>{paragraph}</p>
                   ))}
                 </div>
+
+                <p className="max-w-[65ch] text-sm leading-relaxed text-muted">
+                  <span className="mr-2 text-[0.72rem] tracking-[0.12em] text-ink uppercase">
+                    {entrance.currentlyLabel}
+                  </span>
+                  {entrance.currently}
+                </p>
               </div>
             </section>
+          </GlassReveal>
 
-            {/* Room teasers */}
-            <section className="mx-auto flex w-full max-w-5xl flex-col gap-8 px-6 pb-28">
-              <div className="flex flex-col gap-2">
-                <h2 className="text-xs tracking-[0.1em] text-muted uppercase">
-                  {entrance.roomsLabel}
-                </h2>
-                <p className="text-sm text-muted">{entrance.roomsNote}</p>
-              </div>
+          {/* The rooms beyond: each teaser is a way straight in. */}
+          <section
+            aria-labelledby="rooms-heading"
+            className="mx-auto flex w-full max-w-5xl flex-col gap-8 px-6 pb-28"
+          >
+            <div className="flex flex-col gap-2">
+              <h2
+                id="rooms-heading"
+                className="text-[0.72rem] tracking-[0.12em] text-muted uppercase"
+                // Inline because the global h2 rule sets the display face
+                // outside Tailwind's layers, where a utility cannot beat it.
+                style={{ fontFamily: "var(--font-body-face)" }}
+              >
+                {entrance.roomsLabel}
+              </h2>
+              <p className="text-sm text-muted">{entrance.roomsNote}</p>
+            </div>
 
-              <div className="grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2 lg:grid-cols-5">
-                {exhibits.map((exhibit) => (
-                  <Placard
-                    key={exhibit.slug}
-                    label={exhibit.name}
-                    value={exhibit.teaser}
-                  />
-                ))}
-              </div>
-            </section>
-          </div>
+            <ul className="grid grid-cols-[repeat(auto-fit,minmax(9.5rem,1fr))] gap-x-8 gap-y-6">
+              {exhibits.map((exhibit) => (
+                <li key={exhibit.slug} className="flex">
+                  <Link
+                    href={`/museum/${exhibit.slug}`}
+                    data-cursor="view"
+                    className="group flex-1"
+                  >
+                    <Placard label={exhibit.name} value={exhibit.teaser} linked />
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
         </motion.div>
       </div>
 

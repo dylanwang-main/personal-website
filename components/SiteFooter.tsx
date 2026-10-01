@@ -13,7 +13,7 @@ export default function SiteFooter() {
     <footer className="px-6 py-10">
       <div className="mx-auto flex max-w-6xl flex-col items-center gap-4 text-center">
         {/* Credit line — the museum's name in display type */}
-        <p className="font-display text-xs tracking-[0.12em] text-muted/70 uppercase">
+        <p className="font-display text-xs tracking-[0.12em] text-muted uppercase">
           {footer.credit}
         </p>
 
@@ -28,7 +28,7 @@ export default function SiteFooter() {
         />
 
         {/* Channels: social + contact, all one row */}
-        <ul className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-muted/60">
+        <ul className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-muted">
           {footer.links.map((link) => (
             <li key={link.label}>
               <a
@@ -54,7 +54,7 @@ export default function SiteFooter() {
         </ul>
 
         {/* Museum hours — a bit of world-building */}
-        <p className="text-[0.65rem] tracking-wide text-muted/40">
+        <p className="text-[0.72rem] tracking-wide text-muted">
           {footer.note}
         </p>
       </div>

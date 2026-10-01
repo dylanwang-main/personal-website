@@ -24,7 +24,8 @@ export default function ThemeToggle() {
     <button
       type="button"
       onClick={toggle}
-      aria-label="Toggle light mode"
+      // Contains the visible text, so voice control can target it by what it says.
+      aria-label={isLight ? "Switch to dark mode" : "Switch to light mode"}
       data-cursor="switch"
       className="shrink-0 rounded-full border border-frame bg-panel/70 px-3 py-2.5 text-xs whitespace-nowrap text-ink transition hover:scale-105"
       suppressHydrationWarning

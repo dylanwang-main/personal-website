@@ -7,6 +7,7 @@ import {
   ARRIVAL_LIFT,
   ARRIVAL_NAME,
   EASE_WIPE,
+  NAME_SIZE,
 } from "@/lib/motion";
 import { entrance } from "@/content/content";
 
@@ -85,8 +86,8 @@ export default function ArrivalCurtain() {
       {/* Rises very slightly as it lifts, so the veil reads as being drawn off
           the scene rather than as the name simply dimming. */}
       <motion.span
-        className="px-6 text-center font-display tracking-tight text-ink"
-        style={{ fontSize: "clamp(2.25rem, 7vw, 5rem)" }}
+        className="px-6 text-center font-display leading-[0.9] tracking-tight text-balance text-ink"
+        style={{ fontSize: NAME_SIZE }}
         initial={{ opacity: 0, y: 10 }}
         animate={lifting ? { opacity: 0, y: -8 } : { opacity: 1, y: 0 }}
         transition={{

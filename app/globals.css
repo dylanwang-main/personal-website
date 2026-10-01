@@ -7,7 +7,9 @@
    gold accent, gunmetal frames. Light is the event — surfaces are dark by
    default, content is revealed by illumination.
 
-   --frame at 3:1 against --panel for WCAG 1.4.11 non-text UI.
+   --frame is a hairline tone for frames and dividers, well under 3:1 on
+   purpose: it is never the only edge of a control. Controls that need a
+   visible boundary (WCAG 1.4.11) draw it from --ink instead — see Doorway.
    --slab one step off --panel for surfaces that sit on top of it. */
 :root {
   --wall: #090807;
@@ -42,8 +44,8 @@
   --color-frame: var(--frame);
   --color-gold: var(--gold);
   --color-gold-deep: var(--gold-deep);
-  --font-display: var(--font-cinzel);
-  --font-body: var(--font-raleway);
+  --font-display: var(--font-display-face);
+  --font-body: var(--font-body-face);
 }
 
 body {

@@ -35,6 +35,13 @@ export const ARRIVAL_NAME = 0.5;
 export const ARRIVAL_HOLD = 0.4;
 export const ARRIVAL_LIFT = 0.45;
 
+/**
+ * The name's size, shared by the arrival veil and the entrance hero so the veil
+ * hands the name over at the size it stays, rather than swapping one name for a
+ * bigger one as it lifts. Not a timing, but it exists for the handoff.
+ */
+export const NAME_SIZE = "clamp(2.8rem, 10vw, 6rem)";
+
 /** Kinetic tagline: how long a phrase holds, and the crossfade between them. */
 export const TAGLINE_HOLD = 2.0;
 export const TAGLINE_FADE = 0.3;
